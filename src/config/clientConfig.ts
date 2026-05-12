@@ -76,7 +76,7 @@ export const CLIENT_CONFIG: ClientConfig = {
   },
   features: {
     hasIdUpload: false,
-    hasDayUse: false,
+    hasDayUse: true,
     hasEvent: false,
   },
   checkInOut: {
