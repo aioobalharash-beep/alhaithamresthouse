@@ -405,6 +405,17 @@ export const Booking: React.FC = () => {
   const stayTimes = (() => {
     if (selectedDates.start === null) return null;
     if (isDayUse) {
+      // If admin has configured day-use slots and the guest picked one,
+      // honour the slot's start/end times instead of the default schedule.
+      if (selectedSlot) {
+        return {
+          checkInTime: selectedSlot.start_time,
+          checkOutTime: selectedSlot.end_time,
+          checkInLabel: formatTime(selectedSlot.start_time, lang),
+          checkOutLabel: formatTime(selectedSlot.end_time, lang),
+          isOvernight: false,
+        };
+      }
       const d = new Date(currentYear, currentMonth, selectedDates.start);
       return getDayUseTimes(d, lang);
     }
@@ -712,7 +723,7 @@ export const Booking: React.FC = () => {
         <span className="text-secondary-gold font-bold tracking-widest text-[10px] uppercase">{t('booking.bookYourStay')}</span>
         <h2 className="font-headline text-2xl sm:text-4xl font-bold text-primary-navy">{t('booking.selectDates')}</h2>
         <p className="text-primary-navy/60 text-sm max-w-xs mx-auto">
-          {t('booking.selectDatesDesc', { name: property?.name || t('common.alMalak') })}
+          {t('booking.selectDatesDesc', { name: t('common.alMalak') })}
         </p>
       </section>
 
