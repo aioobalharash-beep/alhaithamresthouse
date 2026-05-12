@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Cinzel:wght@400;500;600;700;800;900&family=Cormorant+Garamond:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600;700;800&family=Noto+Serif:wght@400;600;700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Lato:wght@400;700&display=swap');
 @import "tailwindcss";
 
-/* ─── Stone & Rose — Jabal Akhdar Mountain Luxury Theme ─────────────────── */
+/* ─── Al Haitham Rest House — Cobalt Blue Brand Theme ───────────────────── */
 @theme {
   /* Typography — stone-carved serifs over clean sans body */
   --font-headline: "Cinzel", "Cormorant Garamond", "Noto Serif", serif;
@@ -10,18 +10,18 @@
   --font-lato: "Lato", sans-serif;
   --font-arabic: "Cairo", "IBM Plex Sans Arabic", sans-serif;
 
-  /* Stone & Rose palette */
-  --color-limestone: #E5E4E2;       /* base background */
-  --color-slate: #2F353B;           /* deep contrast sections */
-  --color-juniper: #4B5320;         /* primary accent / success */
-  --color-rose: #B48E92;            /* soft accent / hover / badge */
-  --color-obsidian: #1B1B1B;        /* primary text */
-  --color-off-white: #F9F9F9;       /* text on dark */
+  /* Cobalt Blue palette — sampled from the Al Haitham logo */
+  --color-limestone: #F1F5F9;       /* base background (cool off-white) */
+  --color-slate: #1E3A8A;           /* deep contrast sections (deep cobalt) */
+  --color-juniper: #3B82F6;         /* primary accent / success (bright blue) */
+  --color-rose: #93C5FD;            /* soft accent / hover / badge (sky blue) */
+  --color-obsidian: #0F172A;        /* primary text (near-black blue) */
+  --color-off-white: #F9FAFB;       /* text on dark */
 
   /* Legacy aliases — keep existing components rendering coherently */
-  --color-primary-navy: #2F353B;    /* → slate */
-  --color-secondary-gold: #4B5320;  /* → juniper */
-  --color-pearl-white: #E5E4E2;     /* → limestone */
+  --color-primary-navy: #1E3A8A;    /* → slate */
+  --color-secondary-gold: #3B82F6;  /* → juniper */
+  --color-pearl-white: #F1F5F9;     /* → limestone */
 
   /* Chiseled geometry — no bubbly mobile-app radii */
   --radius-chisel: 8px;
@@ -55,7 +55,7 @@
 
 /* ─── Recessed groove (multi-property toggle track) ─────────────────────── */
 .groove-recessed {
-  background: linear-gradient(180deg, #1f242a 0%, #2F353B 50%, #3a4148 100%);
+  background: linear-gradient(180deg, #102457 0%, #1E3A8A 50%, #2B4FB0 100%);
   box-shadow:
     inset 0 4px 8px rgba(0, 0, 0, 0.55),
     inset 0 -1px 0 rgba(255, 255, 255, 0.04);
@@ -63,7 +63,7 @@
 
 /* ─── Mist effect for the booking modal ─────────────────────────────────── */
 .mist-backdrop {
-  background-color: rgba(47, 53, 59, 0.35);
+  background-color: rgba(30, 58, 138, 0.35);
   backdrop-filter: blur(15px) grayscale(20%);
   -webkit-backdrop-filter: blur(15px) grayscale(20%);
 }
@@ -206,7 +206,7 @@
 
 .printable-invoice .pi-sheet {
   font-family: 'Cairo', 'IBM Plex Sans Arabic', 'Plus Jakarta Sans', sans-serif;
-  color: #1C3A2A;
+  color: #1E3A8A;
   background: #fff;
   width: 210mm;
   min-height: 297mm;
@@ -251,7 +251,7 @@
   font-size: 18px;
   font-weight: 800;
   letter-spacing: 1.5px;
-  color: #1C3A2A;
+  color: #1E3A8A;
 }
 .printable-invoice .pi-brand-tag {
   font-size: 10px;
@@ -265,21 +265,21 @@
 .printable-invoice .pi-title {
   font-size: 32px;
   font-weight: 800;
-  color: #1C3A2A;
+  color: #1E3A8A;
   letter-spacing: 4px;
   line-height: 1;
 }
 .printable-invoice .pi-ref {
   margin-top: 6px;
   font-size: 11px;
-  color: #C8964A;
+  color: #3B82F6;
   font-weight: 700;
   letter-spacing: 2px;
 }
 .printable-invoice .pi-header-accent {
   margin-top: 10mm;
   height: 3px;
-  background: linear-gradient(90deg, #1C3A2A 0%, #1C3A2A 65%, #C8964A 65%, #C8964A 100%);
+  background: linear-gradient(90deg, #1E3A8A 0%, #1E3A8A 65%, #3B82F6 65%, #3B82F6 100%);
   border-radius: 2px;
 }
 
@@ -307,12 +307,12 @@
 .printable-invoice .pi-meta-name {
   font-size: 16px;
   font-weight: 700;
-  color: #1C3A2A;
+  color: #1E3A8A;
 }
 .printable-invoice .pi-meta-value {
   font-size: 14px;
   font-weight: 700;
-  color: #1C3A2A;
+  color: #1E3A8A;
 }
 .printable-invoice .pi-meta-sub {
   font-size: 11px;
@@ -347,11 +347,11 @@
   align-items: baseline;
   gap: 8px;
   font-size: 12px;
-  color: #1C3A2A;
+  color: #1E3A8A;
 }
 .printable-invoice .pi-stay-chip-label {
   font-weight: 700;
-  color: #1C3A2A;
+  color: #1E3A8A;
   letter-spacing: 0.3px;
 }
 .printable-invoice .pi-stay-chip-value {
@@ -364,13 +364,13 @@
   font-weight: 600;
 }
 .printable-invoice .pi-stay-sep {
-  color: #C8964A;
+  color: #3B82F6;
   font-weight: 700;
   margin: 0 2px;
 }
 .printable-invoice .pi-stay-time {
   font-weight: 700;
-  color: #1C3A2A;
+  color: #1E3A8A;
   font-variant-numeric: tabular-nums;
 }
 
@@ -385,7 +385,7 @@
   display: flex;
   justify-content: space-between;
   padding: 10px 16px;
-  background: #1C3A2A;
+  background: #1E3A8A;
   color: #fff;
   font-size: 10px;
   font-weight: 700;
@@ -399,7 +399,7 @@
   padding: 12px 16px;
   border-top: 1px solid #f1f5f9;
   font-size: 13px;
-  color: #1C3A2A;
+  color: #1E3A8A;
 }
 .printable-invoice .pi-row:first-of-type {
   border-top: none;
@@ -419,7 +419,7 @@
   justify-content: space-between;
   align-items: baseline;
   padding: 14px 20px;
-  background: #1C3A2A;
+  background: #1E3A8A;
   color: #fff;
   border-radius: 10px;
 }
@@ -432,13 +432,13 @@
 .printable-invoice .pi-total-value {
   font-size: 22px;
   font-weight: 800;
-  color: #C8964A;
+  color: #3B82F6;
   font-variant-numeric: tabular-nums;
 }
 .printable-invoice .pi-total-currency {
   font-size: 12px;
   margin: 0 4px;
-  color: #C8964A;
+  color: #3B82F6;
   opacity: 0.85;
 }
 
@@ -487,16 +487,16 @@
   margin-top: 6px;
   font-size: 10px;
   font-weight: 700;
-  color: #1C3A2A;
+  color: #1E3A8A;
   text-decoration: none;
   letter-spacing: 0.4px;
 }
 .printable-invoice .pi-footer-location-icon {
-  color: #C8964A;
+  color: #3B82F6;
   flex: none;
 }
 .printable-invoice .pi-footer-location-sep {
-  color: #C8964A;
+  color: #3B82F6;
   font-weight: 700;
 }
 .printable-invoice .pi-footer-location-ar,
@@ -516,13 +516,13 @@
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 3px;
-  color: #C8964A;
+  color: #3B82F6;
   text-transform: uppercase;
 }
 .printable-invoice .pi-terms-title {
   font-size: 30px;
   font-weight: 800;
-  color: #1C3A2A;
+  color: #1E3A8A;
   margin: 4px 0 6px;
   letter-spacing: 1px;
 }
@@ -534,7 +534,7 @@
 .printable-invoice .pi-terms-accent {
   height: 3px;
   width: 80px;
-  background: #C8964A;
+  background: #3B82F6;
   border-radius: 2px;
 }
 .printable-invoice .pi-terms-body {
@@ -545,13 +545,13 @@
 .printable-invoice .pi-terms-block {
   break-inside: avoid;
   page-break-inside: avoid;
-  border-inline-start: 3px solid #C8964A;
+  border-inline-start: 3px solid #3B82F6;
   padding-inline-start: 12px;
 }
 .printable-invoice .pi-terms-heading {
   font-size: 13px;
   font-weight: 700;
-  color: #1C3A2A;
+  color: #1E3A8A;
   margin: 0 0 4px;
   letter-spacing: 0.3px;
 }

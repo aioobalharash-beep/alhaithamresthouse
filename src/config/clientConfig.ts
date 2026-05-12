@@ -55,24 +55,24 @@ export interface ClientConfig {
 }
 
 export const CLIENT_CONFIG: ClientConfig = {
-  chaletName: 'Woody Chalete',
+  chaletName: 'Al Haitham Rest House',
   logoPath: '/assets/brand/logo.png',
   theme: {
-    primary: '#1C3A2A',
-    secondary: '#C8964A',
-    background: '#F2E8D5',
+    primary: '#1E3A8A',
+    secondary: '#3B82F6',
+    background: '#F1F5F9',
   },
   admin: {
     email: 'akwakhhwwdyman@gmail.com',
     additionalEmails: [],
-    name: 'Woody Chalete Admin',
+    name: 'Al Haitham Rest House Admin',
   },
   social: {
-    whatsapp: '96879210323',
-    instagram: 'https://www.instagram.com/wooody_chalete/',
+    whatsapp: '96899416579',
+    instagram: 'https://www.instagram.com/estriahat_alhaitham/',
   },
   location: {
-    mapsUrl: 'https://maps.app.goo.gl/Wsnnm9W6nxvyBUcy8',
+    mapsUrl: 'https://maps.google.com?q=23.0931530,57.3378830&hl=ar-OM&gl=om&entry=gps&lucs=s2se',
   },
   features: {
     hasIdUpload: false,

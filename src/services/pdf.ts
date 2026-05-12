@@ -124,8 +124,8 @@ async function withHiddenDiv(
 // Reusable style constants
 // ---------------------------------------------------------------------------
 
-const NAVY = '#011F36';
-const GOLD = '#D4AF37';
+const NAVY = '#1E3A8A';
+const GOLD = '#3B82F6';
 const LIGHT_BORDER = '#e8e8e8';
 
 // ---------------------------------------------------------------------------
@@ -149,7 +149,7 @@ function buildInvoiceHtml(
     year: 'numeric',
   });
 
-  const companyName = (invoice.chaletName || (isAr ? 'شاليه وودي' : 'Woody Chalete')).toUpperCase();
+  const companyName = (invoice.chaletName || (isAr ? 'استراحة الهيثم' : 'Al Haitham Rest House')).toUpperCase();
   const location = isAr ? 'مسقط، سلطنة عُمان' : 'Muscat, Sultanate of Oman';
   const regInfo = invoice.licenseNumber
     ? (isAr ? `ترخيص سياحي: ${invoice.licenseNumber}` : `Tourism License: ${invoice.licenseNumber}`)
@@ -164,7 +164,7 @@ function buildInvoiceHtml(
   const grandTotalLabel = isAr ? 'الإجمالي العام' : 'Grand Total';
 
   // Translate property name for Arabic
-  const localizedProperty = isAr ? 'شاليه وودي' : invoice.room_type;
+  const localizedProperty = isAr ? 'استراحة الهيثم' : invoice.room_type;
 
   const fmtAmount = (n: number): string => {
     const val = n.toFixed(2);
@@ -215,8 +215,8 @@ function buildInvoiceHtml(
       : logoPath || '';
 
   const footerText = isAr
-    ? 'شاليه وودي  |  سلطنة عُمان  |  هذه فاتورة صادرة آلياً ولا تتطلب توقيعاً'
-    : 'Woody Chalete  |  Sultanate of Oman  |  This is a computer-generated invoice.';
+    ? 'استراحة الهيثم  |  سلطنة عُمان  |  هذه فاتورة صادرة آلياً ولا تتطلب توقيعاً'
+    : 'Al Haitham Rest House  |  Sultanate of Oman  |  This is a computer-generated invoice.';
 
   // Build items HTML
   let itemsHtml = '';
@@ -319,7 +319,7 @@ function buildTermsHtml(
   const dir = isAr ? 'rtl' : 'ltr';
   const textStart = isAr ? 'text-right' : 'text-left';
 
-  const companyName = isAr ? 'شاليه وودي' : 'WOODY CHALETE';
+  const companyName = isAr ? 'استراحة الهيثم' : 'AL HAITHAM REST HOUSE';
   const location = isAr ? 'مسقط، سلطنة عُمان' : 'Muscat, Sultanate of Oman';
   const title = isAr ? 'شروط الإقامة' : 'Terms of Stay';
 
@@ -332,8 +332,8 @@ function buildTermsHtml(
   });
 
   const footerText = isAr
-    ? 'شاليه وودي  |  سلطنة عُمان  |  هذه الوثيقة لأغراض إعلامية فقط.'
-    : 'Woody Chalete  |  Sultanate of Oman  |  This document is for informational purposes.';
+    ? 'استراحة الهيثم  |  سلطنة عُمان  |  هذه الوثيقة لأغراض إعلامية فقط.'
+    : 'Al Haitham Rest House  |  Sultanate of Oman  |  This document is for informational purposes.';
 
   // Convert newlines to paragraphs
   const bodyHtml = termsText

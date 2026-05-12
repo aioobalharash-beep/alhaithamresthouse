@@ -1,11 +1,11 @@
 {
-  "name": "Woody Chalete",
-  "short_name": "Woody",
-  "description": "Luxury chalet booking and management",
+  "name": "Al Haitham Rest House",
+  "short_name": "Al Haitham",
+  "description": "Rest house booking and management",
   "start_url": "/",
   "display": "standalone",
-  "theme_color": "#1C3A2A",
-  "background_color": "#F2E8D5",
+  "theme_color": "#1E3A8A",
+  "background_color": "#F1F5F9",
   "orientation": "portrait-primary",
   "icons": [
     {

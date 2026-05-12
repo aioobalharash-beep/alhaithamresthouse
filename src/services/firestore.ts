@@ -45,7 +45,7 @@ export async function ensureSeedData() {
 
   // Seed properties
   const properties = [
-    { id: 'p1', name: 'Woody Chalete', type: 'Luxury Chalet', capacity: 12, area_sqm: 850, nightly_rate: 120, security_deposit: 50, description: 'Premium luxury chalet', status: 'active' },
+    { id: 'p1', name: 'Al Haitham Rest House', type: 'Rest House', capacity: 12, area_sqm: 850, nightly_rate: 120, security_deposit: 50, description: 'Al Haitham Rest House', status: 'active' },
     { id: 'p2', name: 'Al-Bustan Villa', type: 'Deluxe Villa', capacity: 8, area_sqm: 620, nightly_rate: 180, security_deposit: 75, description: 'Exclusive beachfront villa', status: 'active' },
     { id: 'p3', name: 'Royal Suite A', type: 'Royal Suite', capacity: 4, area_sqm: 320, nightly_rate: 250, security_deposit: 100, description: 'Opulent royal suite with private pool', status: 'active' },
     { id: 'p4', name: 'Coast View Chalet', type: 'Ocean Chalet', capacity: 6, area_sqm: 480, nightly_rate: 150, security_deposit: 60, description: 'Stunning ocean view chalet', status: 'active' },

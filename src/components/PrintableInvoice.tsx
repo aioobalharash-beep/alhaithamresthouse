@@ -92,8 +92,8 @@ export const PrintableInvoice: React.FC<PrintableInvoiceProps> = ({
   const isAr = lang === 'ar';
   const dir = isAr ? 'rtl' : 'ltr';
   const refId = invoice.id.slice(0, 8).toUpperCase();
-  const property = isAr ? 'شاليه وودي' : invoice.room_type;
-  const company = (chaletName || (isAr ? 'شاليه وودي' : 'Woody Chalete')).toUpperCase();
+  const property = isAr ? 'استراحة الهيثم' : invoice.room_type;
+  const company = (chaletName || (isAr ? 'استراحة الهيثم' : 'Al Haitham Rest House')).toUpperCase();
 
   const dateLocale = isAr ? 'ar-OM' : 'en-GB';
   const fmtDate = (d: string | undefined) =>
@@ -133,12 +133,12 @@ export const PrintableInvoice: React.FC<PrintableInvoiceProps> = ({
       ? 'يُحصَّل الرصيد المتبقي عند تسجيل الدخول.'
       : 'Remaining balance to be collected at check-in.',
     footer: isAr
-      ? 'شكراً لاختياركم شاليه وودي  •  فاتورة صادرة آلياً ولا تتطلب توقيعاً'
-      : 'Thank you for choosing Woody Chalete  •  This is a computer-generated invoice.',
+      ? 'شكراً لاختياركم استراحة الهيثم  •  فاتورة صادرة آلياً ولا تتطلب توقيعاً'
+      : 'Thank you for choosing Al Haitham Rest House  •  This is a computer-generated invoice.',
     termsTitle: isAr ? 'شروط الإقامة' : 'Terms of Stay',
     termsIntro: isAr
-      ? 'يُرجى مراجعة الشروط التالية المتعلقة بإقامتكم في شاليه وودي.'
-      : 'Please review the following terms regarding your stay at Woody Chalete.',
+      ? 'يُرجى مراجعة الشروط التالية المتعلقة بإقامتكم في استراحة الهيثم.'
+      : 'Please review the following terms regarding your stay at Al Haitham Rest House.',
     locationAr: 'الموقع',
     locationEn: 'Location',
   };

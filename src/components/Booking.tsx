@@ -1480,7 +1480,7 @@ export const Booking: React.FC = () => {
                   </div>
                   <div>
                     <p className="font-headline text-sm font-bold text-primary-navy">{t('booking.termsOfStay')}</p>
-                    <p className="text-[10px] text-primary-navy/40 uppercase tracking-widest font-bold">Woody Chalete</p>
+                    <p className="text-[10px] text-primary-navy/40 uppercase tracking-widest font-bold">Al Haitham Rest House</p>
                   </div>
                 </div>
                 <button onClick={() => setShowTermsModal(false)} className="p-2 hover:bg-primary-navy/5 rounded-full transition-colors">

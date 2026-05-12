@@ -16,7 +16,7 @@ export const Confirmation: React.FC = () => {
   const state = location.state as { booking?: any; propertyName?: string } | null;
 
   const booking = state?.booking;
-  const propertyName = state?.propertyName || 'Woody Chalete';
+  const propertyName = state?.propertyName || 'Al Haitham Rest House';
 
   const [bankPhone, setBankPhone] = useState('');
   const [licenseNumber, setLicenseNumber] = useState('');
@@ -53,7 +53,7 @@ export const Confirmation: React.FC = () => {
   const isDayUse = booking.check_in === booking.check_out;
   const lang = i18n.language;
   const isFullDay = isDayUse && (!booking.slot_name || /full\s*day/i.test(booking.slot_name));
-  const localizedProperty = lang === 'ar' ? 'شاليه وودي' : propertyName;
+  const localizedProperty = lang === 'ar' ? 'استراحة الهيثم' : propertyName;
 
   const stayLabel = (() => {
     if (isDayUse) {
@@ -255,7 +255,7 @@ export const Confirmation: React.FC = () => {
             <button onClick={() => navigate('/about')} className="text-[10px] text-primary-navy/40 underline font-bold uppercase tracking-widest">{t('sanctuary.aboutUs')}</button>
           </div>
           <p className="text-[9px] text-primary-navy/25 font-bold uppercase tracking-widest">
-            &copy; Woody Chalete. 2024
+            &copy; Al Haitham Rest House. 2024
           </p>
         </div>
       </motion.div>

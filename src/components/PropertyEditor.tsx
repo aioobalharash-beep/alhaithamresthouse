@@ -84,12 +84,12 @@ const DEFAULT_PRICING: PricingSettings = {
 };
 
 const DEFAULT_DATA: PropertyDetails = {
-  name: { en: 'Woody Chalete', ar: 'شاليه وودي' },
+  name: { en: 'Al Haitham Rest House', ar: 'استراحة الهيثم' },
   capacity: 12,
   area_sqm: 850,
   nightly_rate: 120,
   headline: { en: 'Curated Excellence', ar: '' },
-  description: { en: 'Nestled in the heart of the Omani landscape, Woody Chalete offers an unparalleled blend of modern luxury and heritage-inspired architecture. Every corner of this estate has been curated to provide a seamless flow between indoor relaxation and outdoor majesty.', ar: '' },
+  description: { en: 'Nestled in the heart of the Omani landscape, Al Haitham Rest House offers an unparalleled blend of modern luxury and heritage-inspired architecture. Every corner of this estate has been curated to provide a seamless flow between indoor relaxation and outdoor majesty.', ar: '' },
   featureSections: [],
   gallery: [
     { url: 'https://picsum.photos/seed/oman-bedroom-1/800/1000', label: 'Master Suite: Serene Sands' },

@@ -43,5 +43,5 @@ app.get('*', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Woody Chalete API server running on http://localhost:${PORT}`);
+  console.log(`Al Haitham Rest House API server running on http://localhost:${PORT}`);
 });

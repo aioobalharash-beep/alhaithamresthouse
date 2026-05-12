@@ -1,7 +1,7 @@
 rules_version = '2';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Woody Chalete — Firestore Security Rules
+// Al Haitham Rest House — Firestore Security Rules
 //
 // Deploy via Firebase Console:
 //   Firestore Database → Rules → paste this file → Publish
