@@ -616,9 +616,17 @@ export const Invoices: React.FC = () => {
               {/* Modal Header */}
               <div className="bg-surface-container-low p-5 border-b border-primary-navy/5 flex justify-between items-center sticky top-0 z-10">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-primary-navy flex items-center justify-center rounded-lg">
-                    <Receipt className="text-secondary-gold" size={20} />
-                  </div>
+                  {config.logoPath ? (
+                    <img
+                      src={config.logoPath}
+                      alt={config.chaletName}
+                      className="w-10 h-10 object-contain rounded-lg"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 bg-primary-navy flex items-center justify-center rounded-lg">
+                      <Receipt className="text-secondary-gold" size={20} />
+                    </div>
+                  )}
                   <div>
                     <div className="flex items-center gap-2">
                       <p className="font-headline text-sm font-bold">Invoice #{selectedInvoice.id.slice(0, 8).toUpperCase()}</p>
