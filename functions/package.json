@@ -1,6 +1,6 @@
 {
-  "name": "woody-chalete-functions",
-  "description": "Cloud Functions for Woody Chalete — push notifications on new bookings.",
+  "name": "al-haitham-functions",
+  "description": "Cloud Functions for Al Haitham Rest House — push notifications on new bookings.",
   "private": true,
   "engines": {
     "node": "20"

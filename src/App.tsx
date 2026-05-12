@@ -36,7 +36,7 @@ function LoadingScreen() {
   return (
     <div className="min-h-screen bg-pearl-white flex items-center justify-center">
       <div className="text-center space-y-4">
-        <h1 className="text-2xl font-bold font-headline text-primary-navy">Woody Chalete</h1>
+        <h1 className="text-2xl font-bold font-headline text-primary-navy">Al Haitham Rest House</h1>
         <div className="w-8 h-8 border-2 border-primary-navy/20 border-t-secondary-gold rounded-full animate-spin mx-auto" />
       </div>
     </div>

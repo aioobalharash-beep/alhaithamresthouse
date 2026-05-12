@@ -16,7 +16,7 @@
     "adminPortal": "Admin Portal"
   },
   "common": {
-    "alMalak": "Woody Chalete",
+    "alMalak": "Al Haitham Rest House",
     "luxuryDesertSanctuary": "Luxury Chalet",
     "curator": "Curator",
     "notifications": "Notifications",
@@ -101,7 +101,7 @@
   },
   "guests": {
     "guestManagement": "Guest Management",
-    "curatingHospitality": "Curating hospitality for Woody Chalete",
+    "curatingHospitality": "Curating hospitality for Al Haitham Rest House",
     "pendingApproval": "Pending Approval",
     "upcomingArrivals": "Upcoming Arrivals",
     "checkedIn": "Checked In",
@@ -282,11 +282,11 @@
     "feedbackHelps": "Your feedback helps us craft the perfect retreat experience at {{name}}.",
     "placeholderName": "e.g. Ahmed Al-Said",
     "placeholderStayDetails": "e.g. March 2026, 3 nights",
-    "placeholderExperience": "Tell us about your stay at Woody Chalete..."
+    "placeholderExperience": "Tell us about your stay at Al Haitham Rest House..."
   },
   "confirmation": {
     "bookingConfirmed": "Booking Confirmed!",
-    "thankYou": "Thank you for choosing Woody Chalete",
+    "thankYou": "Thank you for choosing Al Haitham Rest House",
     "bookingDetails": "Booking Details",
     "property": "Property",
     "guest": "Guest",
@@ -339,8 +339,8 @@
     "propertyDetails": "Property Details",
     "propertyName": "Property Name",
     "propertyNameAr": "Property Name (Arabic)",
-    "propertyNamePlaceholder": "e.g. Woody Chalete",
-    "propertyNameArPlaceholder": "e.g. شاليه وودي",
+    "propertyNamePlaceholder": "e.g. Al Haitham Rest House",
+    "propertyNameArPlaceholder": "e.g. استراحة الهيثم",
     "capacityGuests": "Capacity (Guests)",
     "areaM2": "Area (m²)",
     "dynamicPricing": "Dynamic Pricing",
@@ -393,7 +393,7 @@
     "bankName": "Bank Name",
     "bankNamePlaceholder": "e.g. Bank Muscat",
     "accountName": "Account Name",
-    "accountNamePlaceholder": "e.g. Woody Chalete LLC",
+    "accountNamePlaceholder": "e.g. Al Haitham Rest House LLC",
     "ibanAccount": "IBAN / Account Number",
     "ibanPlaceholder": "e.g. OM12 0123 ...",
     "bankPhone": "Phone Number (for Mobile Transfer)",
@@ -403,7 +403,7 @@
     "aboutHint": "Long-form story shown on the public About page. Separate paragraphs with a blank line.",
     "aboutEnglish": "About (English)",
     "aboutArabic": "About (Arabic)",
-    "aboutPlaceholderEn": "e.g.\nWoody Chalete is a luxury retreat nestled in the heart of Oman...\n\nEvery detail has been curated for the modern traveler...",
+    "aboutPlaceholderEn": "e.g.\nAl Haitham Rest House is a luxury retreat nestled in the heart of Oman...\n\nEvery detail has been curated for the modern traveler...",
     "aboutPlaceholderAr": "اكتب نص ‘من نحن’ بالعربية...",
     "charsCount": "{{count}} characters",
     "aboutEmptyEn": "Leave blank to show the default About text.",

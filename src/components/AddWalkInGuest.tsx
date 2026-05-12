@@ -171,7 +171,7 @@ export const AddWalkInGuest: React.FC<AddWalkInGuestProps> = ({ open, onClose, p
 
       await firestoreBookings.create({
         property_id: prop?.id || 'default',
-        property_name: prop?.name || 'Woody Chalete',
+        property_name: prop?.name || 'Al Haitham Rest House',
         guest_name: form.name.trim(),
         guest_phone: `+968${form.phone.replace(/\s/g, '')}`,
         guest_email: form.email || undefined,

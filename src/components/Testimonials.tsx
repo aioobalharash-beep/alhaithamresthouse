@@ -28,7 +28,7 @@ export const Testimonials: React.FC = () => {
   const [form, setForm] = useState({
     guest_name: '',
     guest_phone: '',
-    property_name: 'Woody Chalete',
+    property_name: 'Al Haitham Rest House',
     rating: 0,
     text: '',
     stay_details: '',
@@ -61,7 +61,7 @@ export const Testimonials: React.FC = () => {
       setTestimonials(prev => [newT as Testimonial, ...prev]);
       setSubmitted(true);
       setShowForm(false);
-      setForm({ guest_name: '', guest_phone: '', property_name: 'Woody Chalete', rating: 0, text: '', stay_details: '' });
+      setForm({ guest_name: '', guest_phone: '', property_name: 'Al Haitham Rest House', rating: 0, text: '', stay_details: '' });
     } catch (err) {
       console.error('Failed to submit:', err);
     } finally {

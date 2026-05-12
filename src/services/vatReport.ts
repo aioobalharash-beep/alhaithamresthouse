@@ -192,7 +192,7 @@ function drawFooter(doc: jsPDF, pw: number, ph: number) {
   doc.setFontSize(7);
   doc.setTextColor(160);
   doc.text(
-    'Woody Chalete: This is a computer-generated VAT summary report.',
+    'Al Haitham Rest House: This is a computer-generated VAT summary report.',
     pw / 2, footerY, { align: 'center' }
   );
 }

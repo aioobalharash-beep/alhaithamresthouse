@@ -55,7 +55,7 @@ export const Invoices: React.FC = () => {
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [selectedBooking, setSelectedBooking] = useState<RealtimeBooking | null>(null);
   const [whatsappTemplate, setWhatsappTemplate] = useState<string>(
-    `Assalamu Alaikum {{guest_name}},\n\nHere is your invoice for your stay at Woody Chalete:\n\nBooking Ref: {{booking_id}}\nStay: {{stay_amount}} OMR\n{{deposit_line}}\nTotal: {{total_amount}} OMR\n{{receipt_line}}\n\nThank you for choosing Woody Chalete.`
+    `Assalamu Alaikum {{guest_name}},\n\nHere is your invoice for your stay at Al Haitham Rest House:\n\nBooking Ref: {{booking_id}}\nStay: {{stay_amount}} OMR\n{{deposit_line}}\nTotal: {{total_amount}} OMR\n{{receipt_line}}\n\nThank you for choosing Al Haitham Rest House.`
   );
   const [licenseNumber, setLicenseNumber] = useState('');
   const [termsEn, setTermsEn] = useState('');
@@ -111,7 +111,7 @@ export const Invoices: React.FC = () => {
   const bookingToInvoice = (b: RealtimeBooking): Invoice => {
     const lang = i18n.language;
     const isAr = lang === 'ar';
-    const propName = isAr ? 'شاليه وودي' : b.property_name;
+    const propName = isAr ? 'استراحة الهيثم' : b.property_name;
     const deposit = Number(b.depositAmount) || Number(b.security_deposit) || 0;
     const stayTotal = Number(b.stayTotal) || (Number(b.grandTotal || b.total_amount) - deposit);
     const total = Number(b.grandTotal) || Number(b.total_amount) || (stayTotal + deposit);
