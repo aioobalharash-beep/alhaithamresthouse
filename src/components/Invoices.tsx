@@ -7,7 +7,7 @@ import { db } from '../services/firebase';
 import { generateVATReportPDF } from '../services/vatReport';
 import type { Invoice } from '../types';
 import { useTranslation } from 'react-i18next';
-import { getClientConfig, whatsappHref } from '../config/clientConfig';
+import { getClientConfig } from '../config/clientConfig';
 import { BrandMark } from './BrandMark';
 import { PrintableInvoice } from './PrintableInvoice';
 
@@ -111,7 +111,7 @@ export const Invoices: React.FC = () => {
   const bookingToInvoice = (b: RealtimeBooking): Invoice => {
     const lang = i18n.language;
     const isAr = lang === 'ar';
-    const propName = isAr ? 'استراحة الهيثم' : b.property_name;
+    const propName = isAr ? 'استراحة الهيثم' : config.chaletName;
     const deposit = Number(b.depositAmount) || Number(b.security_deposit) || 0;
     const stayTotal = Number(b.stayTotal) || (Number(b.grandTotal || b.total_amount) - deposit);
     const total = Number(b.grandTotal) || Number(b.total_amount) || (stayTotal + deposit);
@@ -120,7 +120,7 @@ export const Invoices: React.FC = () => {
     let stayLabel: string;
     if (isDayUse) {
       if (isFullDay) {
-        stayLabel = isAr ? `يوم كامل بدون مبيت — ${propName}` : `Full Day — ${b.property_name}`;
+        stayLabel = isAr ? `يوم كامل بدون مبيت — ${propName}` : `Full Day — ${propName}`;
       } else {
         const slotDisplay = isAr && b.slot_name_ar ? b.slot_name_ar : (b.slot_name || (isAr ? 'حجز جزئي' : 'Partial Booking'));
         stayLabel = `${slotDisplay} — ${propName}`;
@@ -404,7 +404,7 @@ export const Invoices: React.FC = () => {
                           Deposit Due on Arrival
                         </span>
                       )}
-                      <span className="text-[10px] text-primary-navy/40 font-medium md:hidden">{b.property_name}</span>
+                      <span className="text-[10px] text-primary-navy/40 font-medium md:hidden">{i18n.language === 'ar' ? 'استراحة الهيثم' : config.chaletName}</span>
                     </div>
                   </div>
 
@@ -753,17 +753,6 @@ export const Invoices: React.FC = () => {
                     <MessageCircle size={16} />
                     {i18n.language === 'ar' ? 'إرسال عبر واتساب' : 'Send via WhatsApp'}
                   </button>
-                )}
-                {whatsappHref(config.social.whatsapp) && (
-                  <a
-                    href={whatsappHref(config.social.whatsapp) as string}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 w-full border border-primary-navy/20 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest text-primary-navy hover:bg-white transition-colors"
-                  >
-                    <MessageCircle size={14} />
-                    Contact {config.chaletName}
-                  </a>
                 )}
               </div>
             </motion.div>

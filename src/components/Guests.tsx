@@ -9,6 +9,7 @@ import { db } from '../services/firebase';
 import { firestoreBookings } from '../services/firestore';
 import type { Property } from '../types';
 import { useTranslation } from 'react-i18next';
+import { getClientConfig } from '../config/clientConfig';
 import { AddWalkInGuest } from './AddWalkInGuest';
 
 type DisplayStatus = 'pending' | 'upcoming' | 'checked-in' | 'completed';
@@ -63,7 +64,8 @@ const STATUS_CONFIG: Record<DisplayStatus, { labelKey: string; badgeClass: strin
 };
 
 export const Guests: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const brandName = i18n.language === 'ar' ? 'استراحة الهيثم' : getClientConfig().chaletName;
   const [searchParams, setSearchParams] = useSearchParams();
   const highlightName = searchParams.get('highlight');
   const highlightId = searchParams.get('id');
@@ -239,7 +241,7 @@ export const Guests: React.FC = () => {
   ];
 
   return (
-    <div className="p-6 md:p-8 space-y-8 max-w-4xl mx-auto">
+    <div className="p-4 sm:p-6 md:p-8 space-y-6 sm:space-y-8 max-w-4xl mx-auto">
       <section>
         <h2 className="font-headline text-2xl font-bold text-primary-navy mb-1">{t('guests.guestManagement')}</h2>
         <p className="text-primary-navy/50 text-sm font-medium">{t('guests.curatingHospitality')}</p>
@@ -333,7 +335,7 @@ export const Guests: React.FC = () => {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: i * 0.06 }}
                 className={cn(
-                  "bg-white p-5 rounded-xl shadow-sm border space-y-4 transition-all duration-500",
+                  "bg-white p-4 sm:p-5 rounded-xl shadow-sm border space-y-3 sm:space-y-4 transition-all duration-500",
                   isHighlighted ? "border-secondary-gold ring-2 ring-secondary-gold/40 shadow-lg shadow-secondary-gold/10 bg-secondary-gold/[0.02]" :
                   guest.isPinned ? "border-secondary-gold/40 bg-secondary-gold/[0.03]" :
                   "border-primary-navy/5"
@@ -383,7 +385,7 @@ export const Guests: React.FC = () => {
                     {new Date(guest.check_in).toLocaleDateString('en-GB', { month: 'short', day: 'numeric' })} - {new Date(guest.check_out).toLocaleDateString('en-GB', { month: 'short', day: 'numeric' })}
                   </div>
                   <span className="text-primary-navy/30">&bull;</span>
-                  <span className="text-primary-navy/60">{guest.property_name}</span>
+                  <span className="text-primary-navy/60">{brandName}</span>
                   <span className="text-primary-navy/30">&bull;</span>
                   <span className="text-primary-navy/60">{guest.nights} {guest.nights > 1 ? t('common.nights') : t('common.night')}</span>
                 </div>
@@ -413,7 +415,7 @@ export const Guests: React.FC = () => {
                     <div className="flex items-center gap-2">
                       <AlertCircle size={13} className="text-amber-600 flex-shrink-0" />
                       <div className="flex flex-col">
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-amber-700">{t('guests.depositDueOnArrival')}</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-amber-700">{i18n.language === 'ar' ? 'تأمين قابل للاسترداد' : 'Refundable Deposit'}</span>
                         <span className="text-xs font-bold text-primary-navy font-headline">{guest.security_deposit} {t('common.omr')}</span>
                       </div>
                     </div>

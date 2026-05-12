@@ -337,7 +337,7 @@ const PropertyEditorComponent: React.FC = () => {
   if (loading) return <div className="p-8 animate-pulse"><div className="h-96 bg-primary-navy/5 rounded-xl" /></div>;
 
   return (
-    <div dir={dir} className={cn("px-4 py-6 sm:px-6 md:p-8 space-y-8 max-w-4xl mx-auto", textAlignClass)}>
+    <div dir={dir} className={cn("px-4 py-6 sm:px-6 md:p-8 space-y-6 sm:space-y-8 max-w-4xl mx-auto", textAlignClass)}>
       {/* Header */}
       <div>
         <button onClick={() => navigate('/admin')} className="flex items-center gap-2 text-primary-navy/50 hover:text-primary-navy transition-colors text-xs font-bold uppercase tracking-wider mb-3">
@@ -348,7 +348,7 @@ const PropertyEditorComponent: React.FC = () => {
       </div>
 
       {/* Media Gallery */}
-      <section className="bg-white rounded-[20px] p-6 border border-primary-navy/5 shadow-sm space-y-4">
+      <section className="bg-white rounded-[20px] p-4 sm:p-6 border border-primary-navy/5 shadow-sm space-y-4">
         <h3 className="text-sm font-bold text-primary-navy uppercase tracking-wide">{t('propertyEditor.mediaGallery')}</h3>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {form.gallery.map((img, i) => (
@@ -385,7 +385,7 @@ const PropertyEditorComponent: React.FC = () => {
       </section>
 
       {/* Property Details */}
-      <section className="bg-white rounded-[20px] p-6 border border-primary-navy/5 shadow-sm space-y-5">
+      <section className="bg-white rounded-[20px] p-4 sm:p-6 border border-primary-navy/5 shadow-sm space-y-5">
         <h3 className="text-sm font-bold text-primary-navy uppercase tracking-wide">{t('propertyEditor.propertyDetails')}</h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="space-y-1.5">
@@ -410,7 +410,7 @@ const PropertyEditorComponent: React.FC = () => {
       </section>
 
       {/* Dynamic Pricing — Day-of-Week Rates */}
-      <section className="bg-white rounded-[20px] p-6 border border-primary-navy/5 shadow-sm space-y-5">
+      <section className="bg-white rounded-[20px] p-4 sm:p-6 border border-primary-navy/5 shadow-sm space-y-5">
         <div className="flex items-center gap-2">
           <Tag size={16} className="text-secondary-gold" />
           <h3 className="text-sm font-bold text-primary-navy uppercase tracking-wide">{t('propertyEditor.dynamicPricing')}</h3>
@@ -487,7 +487,7 @@ const PropertyEditorComponent: React.FC = () => {
 
       {/* Day-Use Time Slots */}
       {features.hasDayUse && (
-      <section className="bg-white rounded-[20px] p-6 border border-primary-navy/5 shadow-sm space-y-5">
+      <section className="bg-white rounded-[20px] p-4 sm:p-6 border border-primary-navy/5 shadow-sm space-y-5">
         <div className="flex items-center gap-2">
           <Clock size={16} className="text-secondary-gold" />
           <h3 className="text-sm font-bold text-primary-navy uppercase tracking-wide">{t('propertyEditor.dayUseTimeSlots')}</h3>
@@ -549,7 +549,7 @@ const PropertyEditorComponent: React.FC = () => {
               <input type="text" dir="rtl" value={newSlotNameAr} onChange={(e) => setNewSlotNameAr(e.target.value)} placeholder={t('propertyEditor.slotNameArPlaceholder2')} className={cn(baseInputClass, "text-right")} />
             </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <label className="text-[10px] font-bold uppercase tracking-widest text-primary-navy/40">{t('propertyEditor.startTime')}</label>
               <input type="time" dir={dir} value={newSlotStart} onChange={(e) => setNewSlotStart(e.target.value)} className={inputClass} />
@@ -571,7 +571,7 @@ const PropertyEditorComponent: React.FC = () => {
       )}
 
       {/* Special Date Overrides */}
-      <section className="bg-white rounded-[20px] p-6 border border-primary-navy/5 shadow-sm space-y-5">
+      <section className="bg-white rounded-[20px] p-4 sm:p-6 border border-primary-navy/5 shadow-sm space-y-5">
         <div className="flex items-center gap-2">
           <Calendar size={16} className="text-secondary-gold" />
           <h3 className="text-sm font-bold text-primary-navy uppercase tracking-wide">{t('propertyEditor.specialDates')}</h3>
@@ -656,7 +656,7 @@ const PropertyEditorComponent: React.FC = () => {
       </section>
 
       {/* Discount Rules */}
-      <section className="bg-white rounded-[20px] p-6 border border-primary-navy/5 shadow-sm space-y-5">
+      <section className="bg-white rounded-[20px] p-4 sm:p-6 border border-primary-navy/5 shadow-sm space-y-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Percent size={16} className="text-secondary-gold" />
@@ -730,7 +730,7 @@ const PropertyEditorComponent: React.FC = () => {
       </section>
 
       {/* Bank Transfer Details */}
-      <section className="bg-white rounded-[20px] p-6 border border-primary-navy/5 shadow-sm space-y-5">
+      <section className="bg-white rounded-[20px] p-4 sm:p-6 border border-primary-navy/5 shadow-sm space-y-5">
         <div className="flex items-center gap-2">
           <Landmark size={16} className="text-secondary-gold" />
           <h3 className="text-sm font-bold text-primary-navy uppercase tracking-wide">{t('propertyEditor.bankTransferDetails')}</h3>
@@ -760,7 +760,7 @@ const PropertyEditorComponent: React.FC = () => {
       </section>
 
       {/* About Us */}
-      <section className="bg-white rounded-[20px] p-6 border border-primary-navy/5 shadow-sm space-y-5">
+      <section className="bg-white rounded-[20px] p-4 sm:p-6 border border-primary-navy/5 shadow-sm space-y-5">
         <div className="flex items-center gap-2">
           <FileText size={16} className="text-secondary-gold" />
           <h3 className="text-sm font-bold text-primary-navy uppercase tracking-wide">{t('propertyEditor.aboutUs')}</h3>
@@ -801,7 +801,7 @@ const PropertyEditorComponent: React.FC = () => {
       </section>
 
       {/* Terms of Stay — Public Page */}
-      <section className="bg-white rounded-[20px] p-6 border border-primary-navy/5 shadow-sm space-y-5">
+      <section className="bg-white rounded-[20px] p-4 sm:p-6 border border-primary-navy/5 shadow-sm space-y-5">
         <div className="flex items-center gap-2">
           <FileText size={16} className="text-secondary-gold" />
           <h3 className="text-sm font-bold text-primary-navy uppercase tracking-wide">{t('propertyEditor.termsPublic')}</h3>
@@ -842,7 +842,7 @@ const PropertyEditorComponent: React.FC = () => {
       </section>
 
       {/* Terms of Stay — Booking Checkout Popup */}
-      <section className="bg-white rounded-[20px] p-6 border border-primary-navy/5 shadow-sm space-y-5">
+      <section className="bg-white rounded-[20px] p-4 sm:p-6 border border-primary-navy/5 shadow-sm space-y-5">
         <div className="flex items-center gap-2">
           <FileText size={16} className="text-secondary-gold" />
           <h3 className="text-sm font-bold text-primary-navy uppercase tracking-wide">{t('propertyEditor.termsCheckout')}</h3>
@@ -883,7 +883,7 @@ const PropertyEditorComponent: React.FC = () => {
       </section>
 
       {/* Footer & Contact */}
-      <section className="bg-white rounded-[20px] p-6 border border-primary-navy/5 shadow-sm space-y-5">
+      <section className="bg-white rounded-[20px] p-4 sm:p-6 border border-primary-navy/5 shadow-sm space-y-5">
         <h3 className="text-sm font-bold text-primary-navy uppercase tracking-wide">{t('propertyEditor.footerContact')}</h3>
         <p className="text-[10px] text-primary-navy/40 font-medium">
           {t('propertyEditor.footerHint')}
@@ -939,7 +939,7 @@ const PropertyEditorComponent: React.FC = () => {
       </section>
 
       {/* Description */}
-      <section className="bg-white rounded-[20px] p-6 border border-primary-navy/5 shadow-sm space-y-5">
+      <section className="bg-white rounded-[20px] p-4 sm:p-6 border border-primary-navy/5 shadow-sm space-y-5">
         <h3 className="text-sm font-bold text-primary-navy uppercase tracking-wide">{t('propertyEditor.description')}</h3>
         <div className="space-y-1.5">
           <label className="text-[10px] font-bold uppercase tracking-widest text-secondary-gold">{t('propertyEditor.sectionHeadline')}</label>
@@ -964,7 +964,7 @@ const PropertyEditorComponent: React.FC = () => {
       </section>
 
       {/* Property Quick Facts */}
-      <section className="bg-white rounded-[20px] p-6 border border-primary-navy/5 shadow-sm space-y-4">
+      <section className="bg-white rounded-[20px] p-4 sm:p-6 border border-primary-navy/5 shadow-sm space-y-4">
         <h3 className="text-sm font-bold text-primary-navy uppercase tracking-wide">{t('propertyEditor.quickFacts')}</h3>
         <div className="space-y-2">
           {(form.quickFacts || []).map((fact, i) => (
@@ -1020,7 +1020,7 @@ const PropertyEditorComponent: React.FC = () => {
       </section>
 
       {/* Feature Sections */}
-      <section className="bg-white rounded-[20px] p-6 border border-primary-navy/5 shadow-sm space-y-4">
+      <section className="bg-white rounded-[20px] p-4 sm:p-6 border border-primary-navy/5 shadow-sm space-y-4">
         <div className="flex items-center gap-2">
           <LayoutGrid size={16} className="text-secondary-gold" />
           <h3 className="text-sm font-bold text-primary-navy uppercase tracking-wide">{t('propertyEditor.featureSections')}</h3>
