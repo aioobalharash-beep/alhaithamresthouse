@@ -5,6 +5,7 @@ import { cn } from '@/src/lib/utils';
 import { testimonialsApi } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { getClientConfig } from '../config/clientConfig';
 
 interface Testimonial {
   id?: string;
