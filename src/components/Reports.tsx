@@ -267,7 +267,7 @@ export const Reports: React.FC = () => {
                   >
                     <div className="col-span-4">
                       <p className="font-bold text-primary-navy text-sm">{b.guest_name}</p>
-                      <p className="text-[10px] text-primary-navy/40 font-medium md:hidden">{b.property_name}</p>
+                      <p className="text-[10px] text-primary-navy/40 font-medium md:hidden">{i18n.language === 'ar' ? 'استراحة الهيثم' : getClientConfig().chaletName}</p>
                     </div>
                     <div className="col-span-3">
                       <span className="text-xs text-primary-navy/60">

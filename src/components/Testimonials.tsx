@@ -19,7 +19,8 @@ interface Testimonial {
 
 export const Testimonials: React.FC = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const brandName = i18n.language === 'ar' ? 'استراحة الهيثم' : getClientConfig().chaletName;
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -228,7 +229,7 @@ export const Testimonials: React.FC = () => {
             >
               <div>
                 <h4 className="text-sm font-bold text-primary-navy">{tm.guest_name}</h4>
-                <p className="text-[10px] text-primary-navy/50 font-medium">{tm.property_name} {tm.stay_details && `\u2022 ${tm.stay_details}`}</p>
+                <p className="text-[10px] text-primary-navy/50 font-medium">{brandName} {tm.stay_details && `\u2022 ${tm.stay_details}`}</p>
               </div>
               <p className="text-sm italic text-primary-navy/80 leading-relaxed">"{tm.text}"</p>
               <div className="flex text-secondary-gold">

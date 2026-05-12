@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, BarChart3, ChevronRight as ChevronRightIcon, ArrowUpRight, TrendingUp, TrendingDown, X } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 import { useTranslation } from 'react-i18next';
+import { getClientConfig } from '../config/clientConfig';
 import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
 import { db } from '../services/firebase';
 import { formatTime } from '../services/pricingUtils';
@@ -155,6 +156,7 @@ export const Calendar: React.FC = () => {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
+  const brandName = lang === 'ar' ? 'استراحة الهيثم' : getClientConfig().chaletName;
   const [bookings, setBookings] = useState<RealtimeBooking[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCompare, setShowCompare] = useState(false);
@@ -197,7 +199,7 @@ export const Calendar: React.FC = () => {
       .map(b => ({
         id: b.id,
         type: 'payment' as const,
-        description: `Booking Payment – ${b.property_name}`,
+        description: `Booking Payment – ${brandName}`,
         amount: Number(b.grandTotal) || Number(b.total_amount) || 0,
         date: b.created_at ? b.created_at.split('T')[0] : '',
       })),
@@ -505,7 +507,7 @@ export const Calendar: React.FC = () => {
                     {arrival.guest_name}
                   </button>
                   <p className="text-xs text-primary-navy/40 font-medium">
-                    {arrival.property_name} &bull; {arrival.slot_name
+                    {brandName} &bull; {arrival.slot_name
                       ? `${arrival.slot_name}: ${formatTime(arrival.slot_start_time!, lang)} – ${formatTime(arrival.slot_end_time!, lang)}`
                       : arrival.check_in === arrival.check_out
                         ? t('common.dayUse')
