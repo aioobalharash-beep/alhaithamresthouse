@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getDb } from '../_lib/firebaseAdmin';
+import crypto from 'node:crypto';
+import { getAdminAuth, getDb } from '../_lib/firebaseAdmin';
 import { parseIcs, type ParsedEvent } from '../_lib/ical';
 
 // Incoming sync — pulls every URL listed in
@@ -9,8 +10,12 @@ import { parseIcs, type ParsedEvent } from '../_lib/ical';
 //
 //   POST /api/ical/sync
 //
-// Open by design: only admins can edit settings/property_details (per
-// firestore.rules), so the URLs being fetched are already admin-controlled.
+// Auth (either is sufficient):
+//   1. Authorization: Bearer <SYNC_TOKEN>  — for GitHub Actions / cron jobs.
+//      SYNC_TOKEN is a Vercel env var, never exposed to the browser bundle.
+//   2. Authorization: Bearer <Firebase ID token>  — for the admin "Sync now"
+//      button. We verify the token with firebase-admin and require role=admin
+//      on the corresponding users/{uid} doc.
 
 interface ImportUrlEntry {
   url: string;
@@ -38,6 +43,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     db = getDb();
   } catch (err) {
     res.status(500).json({ error: err instanceof Error ? err.message : String(err) });
+    return;
+  }
+
+  const authResult = await authorize(req);
+  if (!authResult.ok) {
+    res.status(authResult.status).json({ error: authResult.message });
     return;
   }
 
@@ -141,4 +152,65 @@ function hostFor(url: string): string {
   } catch {
     return 'imported';
   }
+}
+
+// ─── Auth helpers ────────────────────────────────────────────────────────────
+
+type AuthResult =
+  | { ok: true }
+  | { ok: false; status: 401 | 403 | 500; message: string };
+
+async function authorize(req: VercelRequest): Promise<AuthResult> {
+  const bearer = extractBearer(req);
+  if (!bearer) {
+    return { ok: false, status: 401, message: 'Missing bearer token' };
+  }
+
+  // Path 1: static SYNC_TOKEN. Used by GitHub Actions / cron jobs.
+  const syncToken = process.env.SYNC_TOKEN;
+  if (syncToken && timingSafeStringEqual(bearer, syncToken)) {
+    return { ok: true };
+  }
+
+  // Path 2: Firebase ID token from a signed-in admin (the in-app button).
+  try {
+    const decoded = await getAdminAuth().verifyIdToken(bearer);
+    const allow = (process.env.ADMIN_EMAILS || '')
+      .split(',')
+      .map((s) => s.trim().toLowerCase())
+      .filter(Boolean);
+    const email = (decoded.email || '').toLowerCase();
+    if (allow.length > 0 && allow.includes(email)) {
+      return { ok: true };
+    }
+    // Fall back to the role flag on the users/{uid} profile so admins promoted
+    // via Firestore (and not in the env allowlist) still work.
+    const profile = await getDb().collection('users').doc(decoded.uid).get();
+    if (profile.exists && (profile.data() as { role?: string }).role === 'admin') {
+      return { ok: true };
+    }
+    return { ok: false, status: 403, message: 'Not authorized' };
+  } catch {
+    return { ok: false, status: 401, message: 'Invalid token' };
+  }
+}
+
+function extractBearer(req: VercelRequest): string | null {
+  const header = req.headers.authorization;
+  if (typeof header === 'string') {
+    const m = header.match(/^Bearer\s+(.+)$/i);
+    if (m) return m[1].trim();
+  }
+  // Allow ?token=… as a fallback for tools that can't set headers.
+  const q = req.query.token;
+  if (typeof q === 'string' && q) return q;
+  if (Array.isArray(q) && q[0]) return q[0];
+  return null;
+}
+
+function timingSafeStringEqual(a: string, b: string): boolean {
+  const ab = Buffer.from(a);
+  const bb = Buffer.from(b);
+  if (ab.length !== bb.length) return false;
+  return crypto.timingSafeEqual(ab, bb);
 }

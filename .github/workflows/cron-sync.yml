@@ -1,0 +1,59 @@
+name: iCal Sync
+
+# Triggers /api/ical/sync on Vercel every 30 minutes so external calendars
+# (Booking.com, Massarah, …) stay in lockstep with our availability without
+# paying for Vercel Cron.
+#
+# Setup checklist (one-time):
+#   1. Pick a long random string (e.g. `openssl rand -hex 32`).
+#   2. GitHub  → repo Settings → Secrets and variables → Actions → New secret
+#        SYNC_TOKEN   = <that string>
+#        SYNC_URL     = https://<your-app>.vercel.app/api/ical/sync
+#   3. Vercel  → project Settings → Environment Variables (Production)
+#        SYNC_TOKEN   = <same string>
+#        Redeploy so the function picks it up.
+#
+# Manual run: Actions tab → "iCal Sync" → "Run workflow".
+
+on:
+  schedule:
+    # GitHub cron is UTC and runs at best-effort timing — bursts of activity
+    # on the platform can delay a tick by a few minutes; that's fine for our
+    # 30-minute cadence.
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+
+concurrency:
+  # Skip a tick if the previous one is still running — sync is idempotent so
+  # there's no value in queueing duplicates.
+  group: ical-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: POST /api/ical/sync
+        env:
+          SYNC_URL: ${{ secrets.SYNC_URL }}
+          SYNC_TOKEN: ${{ secrets.SYNC_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SYNC_URL:-}" ] || [ -z "${SYNC_TOKEN:-}" ]; then
+            echo "::error::SYNC_URL or SYNC_TOKEN secret is missing."
+            exit 1
+          fi
+
+          # --fail-with-body so a non-2xx response exits non-zero AND prints
+          # the response payload — that way the Actions log shows whatever
+          # error the endpoint reported instead of a bare HTTP code.
+          response=$(curl --silent --show-error --fail-with-body \
+            --request POST \
+            --header "Authorization: Bearer ${SYNC_TOKEN}" \
+            --header "Content-Type: application/json" \
+            --max-time 60 \
+            "${SYNC_URL}")
+
+          echo "Sync response:"
+          echo "${response}"

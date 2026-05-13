@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useTransition } from 'react';
 import { doc, getDoc, onSnapshot, setDoc } from 'firebase/firestore';
-import { db } from '../services/firebase';
+import { auth, db } from '../services/firebase';
 import { cn } from '@/src/lib/utils';
 import {
   Calendar,
@@ -152,8 +152,21 @@ export const SyncSettings: React.FC = () => {
     setSyncResult(null);
     startSync(async () => {
       try {
-        const r = await fetch('/api/ical/sync', { method: 'POST' });
+        // The endpoint accepts either a static SYNC_TOKEN (for the GH Actions
+        // cron) or a verified Firebase ID token for the admin button. We send
+        // the latter so the token never lands in the JS bundle.
+        const idToken = await auth.currentUser?.getIdToken();
+        if (!idToken) {
+          throw new Error('Not signed in.');
+        }
+        const r = await fetch('/api/ical/sync', {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${idToken}` },
+        });
         const data = await r.json();
+        if (!r.ok) {
+          throw new Error(data.error || `HTTP ${r.status}`);
+        }
         setSyncResult(data);
       } catch (err) {
         setSyncResult({
