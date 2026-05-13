@@ -624,6 +624,12 @@ export const Booking: React.FC = () => {
             idImageUrl: idImageUrl || undefined,
             stay_type: stayType,
             guestCount,
+            ...(priceBreakdown && priceBreakdown.discount_amount > 0
+              ? {
+                  discount_amount: priceBreakdown.discount_amount,
+                  discount_kind: priceBreakdown.discount_kind,
+                }
+              : {}),
             ...(stayTimes ? {
               check_in_time: stayTimes.checkInTime,
               check_out_time: stayTimes.checkOutTime,
@@ -699,6 +705,12 @@ export const Booking: React.FC = () => {
         payment_method: paymentMethod,
         stay_type: stayType,
         guestCount,
+        ...(priceBreakdown && priceBreakdown.discount_amount > 0
+          ? {
+              discount_amount: priceBreakdown.discount_amount,
+              discount_kind: priceBreakdown.discount_kind,
+            }
+          : {}),
         receiptURL,
         idImageUrl: idImageUrl || undefined,
         ...(stayTimes ? {
@@ -1170,9 +1182,34 @@ export const Booking: React.FC = () => {
           </div>
 
           {priceBreakdown.discount_amount > 0 && (
-            <div className="flex justify-between text-sm text-emerald-600">
-              <span className="font-medium">{t('booking.discount')}</span>
+            <div
+              className={cn(
+                'flex justify-between text-sm',
+                priceBreakdown.discount_kind === 'last_night_half'
+                  ? 'text-amber-700'
+                  : 'text-emerald-600',
+              )}
+            >
+              <span className="font-medium">
+                {priceBreakdown.discount_kind === 'last_night_half'
+                  ? t('booking.discountLastNight', { defaultValue: 'Last Night Discount (50% off)' })
+                  : t('booking.discount')}
+              </span>
               <span className="font-bold">-{priceBreakdown.discount_amount} {t('common.omr')}</span>
+            </div>
+          )}
+
+          {/* Multi-night bonus badge — shown the moment a 2+ night stay
+              triggers the last-night-half rule, so the guest sees the value
+              they're getting before they hit Confirm. */}
+          {priceBreakdown.discount_kind === 'last_night_half' && (
+            <div className="flex items-center gap-2 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+              <span className="text-base leading-none">★</span>
+              <span className="font-bold">
+                {t('booking.multiNightBonus', {
+                  defaultValue: 'Multi-night bonus applied!',
+                })}
+              </span>
             </div>
           )}
 

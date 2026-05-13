@@ -679,53 +679,80 @@ const PropertyEditorComponent: React.FC = () => {
 
         {form.pricing.discount?.enabled && (
           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-primary-navy/40">{t('propertyEditor.discountType')}</label>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setDiscount({ type: 'percent' })}
-                    className={cn(
-                      "flex-1 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all",
-                      form.pricing.discount.type === 'percent' ? "bg-primary-navy text-white" : "bg-pearl-white text-primary-navy/50 border border-primary-navy/10"
-                    )}
-                  >
-                    {t('propertyEditor.percentage')}
-                  </button>
-                  <button
-                    onClick={() => setDiscount({ type: 'flat' })}
-                    className={cn(
-                      "flex-1 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all",
-                      form.pricing.discount.type === 'flat' ? "bg-primary-navy text-white" : "bg-pearl-white text-primary-navy/50 border border-primary-navy/10"
-                    )}
-                  >
-                    {t('propertyEditor.flatOmr')}
-                  </button>
+            {/* Type selector — three mutually exclusive options. Picking
+                'last_night_half' implicitly turns the other two off (single
+                .type field), so no separate "stack prevention" logic needed. */}
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-primary-navy/40">{t('propertyEditor.discountType')}</label>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setDiscount({ type: 'percent' })}
+                  className={cn(
+                    "py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all",
+                    form.pricing.discount.type === 'percent' ? "bg-primary-navy text-white" : "bg-pearl-white text-primary-navy/50 border border-primary-navy/10"
+                  )}
+                >
+                  {t('propertyEditor.percentage')}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setDiscount({ type: 'flat' })}
+                  className={cn(
+                    "py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all",
+                    form.pricing.discount.type === 'flat' ? "bg-primary-navy text-white" : "bg-pearl-white text-primary-navy/50 border border-primary-navy/10"
+                  )}
+                >
+                  {t('propertyEditor.flatOmr')}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setDiscount({ type: 'last_night_half' })}
+                  className={cn(
+                    "col-span-2 sm:col-span-1 py-2.5 rounded-xl text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all leading-tight",
+                    form.pricing.discount.type === 'last_night_half'
+                      ? "bg-amber-500 text-white shadow-sm"
+                      : "bg-pearl-white text-primary-navy/50 border border-primary-navy/10 hover:border-amber-300"
+                  )}
+                >
+                  {t('propertyEditor.discountLastNightHalf', { defaultValue: 'Last Night ½ Off' })}
+                </button>
+              </div>
+            </div>
+
+            {form.pricing.discount.type === 'last_night_half' ? (
+              <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-900 leading-snug">
+                {t('propertyEditor.discountLastNightHalfHint', {
+                  defaultValue:
+                    '50% is automatically taken off the last night when guests book 2 or more nights. No date range, no value to set — toggle on and it applies to every multi-night stay.',
+                })}
+              </div>
+            ) : (
+              <>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-primary-navy/40">
+                    {form.pricing.discount.type === 'percent' ? t('propertyEditor.discountPercent') : t('propertyEditor.discountOmr')}
+                  </label>
+                  <input
+                    type="number"
+                    dir={dir}
+                    value={form.pricing.discount.value}
+                    onChange={(e) => setDiscount({ value: parseFloat(e.target.value) || 0 })}
+                    className={inputClass}
+                  />
                 </div>
-              </div>
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-primary-navy/40">
-                  {form.pricing.discount.type === 'percent' ? t('propertyEditor.discountPercent') : t('propertyEditor.discountOmr')}
-                </label>
-                <input
-                  type="number"
-                  dir={dir}
-                  value={form.pricing.discount.value}
-                  onChange={(e) => setDiscount({ value: parseFloat(e.target.value) || 0 })}
-                  className={inputClass}
-                />
-              </div>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-primary-navy/40">{t('propertyEditor.startDate')}</label>
-                <input type="date" dir={dir} value={form.pricing.discount.start_date} onChange={(e) => setDiscount({ start_date: e.target.value })} className={inputClass} />
-              </div>
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-primary-navy/40">{t('propertyEditor.endDate')}</label>
-                <input type="date" dir={dir} value={form.pricing.discount.end_date} onChange={(e) => setDiscount({ end_date: e.target.value })} className={inputClass} />
-              </div>
-            </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-primary-navy/40">{t('propertyEditor.startDate')}</label>
+                    <input type="date" dir={dir} value={form.pricing.discount.start_date} onChange={(e) => setDiscount({ start_date: e.target.value })} className={inputClass} />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-primary-navy/40">{t('propertyEditor.endDate')}</label>
+                    <input type="date" dir={dir} value={form.pricing.discount.end_date} onChange={(e) => setDiscount({ end_date: e.target.value })} className={inputClass} />
+                  </div>
+                </div>
+              </>
+            )}
           </motion.div>
         )}
       </section>
