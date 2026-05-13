@@ -3,17 +3,26 @@ rules_version = '2';
 // ─────────────────────────────────────────────────────────────────────────────
 // Al Haitham Rest House — Firestore Security Rules
 //
-// Deploy via Firebase Console:
-//   Firestore Database → Rules → paste this file → Publish
+// Paste into Firebase Console → Firestore Database → Rules → Publish.
+// Or deploy via CLI:  firebase deploy --only firestore:rules
 //
-// Or via Firebase CLI:
-//   firebase deploy --only firestore:rules
+// Model:
+//   • Public, unauthenticated traffic can READ the catalogue + site content
+//     (properties, settings, testimonials) and CREATE guest-side records
+//     (bookings, guests, transactions, notifications, testimonials).
+//   • Authenticated users own their /users/{uid} profile doc.
+//   • Admins (role == 'admin' on their user doc) can read/write everything.
 // ─────────────────────────────────────────────────────────────────────────────
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // ── Helpers ────────────────────────────────────────────────────────────
     function isSignedIn() {
       return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
     }
 
     function isAdmin() {
@@ -22,21 +31,18 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
-    // ── User profiles ──
-    // Each Firebase Auth user owns exactly one profile doc keyed by uid.
-    // The Login flow creates this doc on first sign-in (with role='admin'
-    // when the email is on the clientConfig allowlist).
+    // ── User profiles ──────────────────────────────────────────────────────
+    // Created on first sign-in by firestoreUsers.login(). Each user reads /
+    // writes only their own doc; admins can manage all.
     match /users/{uid} {
-      allow read:           if isSignedIn() && (request.auth.uid == uid || isAdmin());
-      allow create:         if isSignedIn() && request.auth.uid == uid;
-      allow update, delete: if isSignedIn() && (request.auth.uid == uid || isAdmin());
+      allow read:           if isOwner(uid) || isAdmin();
+      allow create:         if isOwner(uid);
+      allow update, delete: if isOwner(uid) || isAdmin();
     }
 
-    // ── Public catalogue & site content ──
-    // Anyone (including unauthenticated guests) can READ. Only authenticated
-    // users can WRITE — this lets the first-load seed in firestore.ts populate
-    // the properties collection on initial admin sign-in. After bootstrap,
-    // all property edits flow through settings/property_details (admin-only).
+    // ── Public catalogue & site content ────────────────────────────────────
+    // `properties` and `settings` are also written on initial bootstrap by any
+    // signed-in user so a fresh admin can seed the catalogue on first login.
     match /properties/{id} {
       allow read;
       allow write: if isSignedIn();
@@ -47,16 +53,16 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // Testimonials: public submissions, admin moderation.
     match /testimonials/{id} {
       allow read;
-      allow create;                       // public submissions
+      allow create;
       allow update, delete: if isAdmin();
     }
 
-    // ── Guest checkout flow ──
-    // Bookings + their derived guest/transaction/notification rows can be
-    // CREATED by anyone (the booking page is public). Reads & moderation are
-    // admin-only.
+    // ── Guest checkout flow ────────────────────────────────────────────────
+    // The public booking page creates these as an unauthenticated guest. Only
+    // admins can read / mutate after the fact.
     match /bookings/{id} {
       allow read:           if isAdmin();
       allow create;
@@ -81,17 +87,21 @@ service cloud.firestore {
       allow delete:         if isAdmin();
     }
 
-    // ── Invoices ──
-    // Admin-managed; guests reach their invoice via a one-shot PDF blob URL,
-    // not a Firestore read.
+    // ── Invoices (admin-managed) ───────────────────────────────────────────
     match /invoices/{id}      { allow read, write: if isAdmin(); }
     match /invoice_items/{id} { allow read, write: if isAdmin(); }
 
-    // ── FCM device tokens for admin push notifications ──
+    // ── FCM device tokens for admin push notifications ─────────────────────
     // Collection name must match ADMIN_TOKENS_COLLECTION in
-    // src/services/pushNotifications.ts and the api/functions handlers.
+    // src/services/pushNotifications.ts.
     match /admin_tokens/{id} {
       allow read, write: if isAdmin();
+    }
+
+    // ── Default deny ───────────────────────────────────────────────────────
+    // Any collection not listed above is off-limits.
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }
