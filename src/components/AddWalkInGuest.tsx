@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { X, UserPlus, Check, Gift, Upload, IdCard, AlertCircle, Moon, Sun } from 'lucide-react';
+import { X, UserPlus, Check, Gift, Upload, IdCard, AlertCircle, Moon, Sun, Users } from 'lucide-react';
+import { maxGuestsFor, clampGuestCount } from '../config/occupancy';
 import { cn } from '@/src/lib/utils';
 import { useTranslation } from 'react-i18next';
 import { firestoreBookings } from '../services/firestore';
@@ -55,6 +56,12 @@ export const AddWalkInGuest: React.FC<AddWalkInGuestProps> = ({ open, onClose, p
   const [submitting, setSubmitting] = useState(false);
 
   const [stayType, setStayType] = useState<StayType>('night');
+  const [guestCount, setGuestCount] = useState<number>(2);
+  // Walk-in stayType maps to the shared occupancy contract.
+  const occupancyStayType: 'night_stay' | 'day_use' = stayType === 'night' ? 'night_stay' : 'day_use';
+  useEffect(() => {
+    setGuestCount((c) => clampGuestCount(c, occupancyStayType));
+  }, [occupancyStayType]);
   const [checkInTime, setCheckInTime] = useState(defaultCheckInLabel());
   const [checkOutTime, setCheckOutTime] = useState(defaultCheckOutLabel());
 
@@ -91,6 +98,7 @@ export const AddWalkInGuest: React.FC<AddWalkInGuestProps> = ({ open, onClose, p
     setForm(EMPTY_FORM);
     setErrors({});
     setStayType('night');
+    setGuestCount(2);
     setCheckInTime(defaultCheckInLabel());
     setCheckOutTime(defaultCheckOutLabel());
     setPaymentMode('paid');
@@ -189,6 +197,8 @@ export const AddWalkInGuest: React.FC<AddWalkInGuestProps> = ({ open, onClose, p
         receiptURL,
         idImageUrl,
         isManual: true,
+        stay_type: stayType === 'night' ? 'night_stay' : 'day_use',
+        guestCount,
       });
 
       reset();
@@ -306,6 +316,36 @@ export const AddWalkInGuest: React.FC<AddWalkInGuestProps> = ({ open, onClose, p
                 <Sun size={12} />
                 {t('guests.sameDay')}
               </button>
+            </div>
+          </div>
+
+          {/* Guest count */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between gap-2">
+              <label htmlFor="walkin-guest-count" className="text-[10px] font-bold uppercase tracking-widest text-secondary-gold">
+                Guests
+              </label>
+              <span className="text-[10px] font-medium text-primary-navy/40">
+                Max {maxGuestsFor(occupancyStayType)}
+              </span>
+            </div>
+            <div className="relative">
+              <Users
+                size={14}
+                className="absolute start-3 top-1/2 -translate-y-1/2 text-secondary-gold pointer-events-none"
+              />
+              <select
+                id="walkin-guest-count"
+                value={guestCount}
+                onChange={(e) => setGuestCount(clampGuestCount(parseInt(e.target.value, 10) || 1, occupancyStayType))}
+                className="w-full bg-surface-container-low border border-primary-navy/10 rounded-xl py-2.5 ps-9 pe-3 text-sm font-medium text-primary-navy focus:ring-1 focus:ring-secondary-gold/50 outline-none appearance-none"
+              >
+                {Array.from({ length: maxGuestsFor(occupancyStayType) }, (_, i) => i + 1).map((n) => (
+                  <option key={n} value={n}>
+                    {n} {n === 1 ? 'guest' : 'guests'}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 

@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { ChevronLeft, ChevronRight, ShieldCheck, AlertCircle, ArrowLeft, Upload, CreditCard, Building2, Check, FileText, X, Download } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ShieldCheck, AlertCircle, ArrowLeft, Upload, CreditCard, Building2, Check, FileText, X, Download, Users, Info } from 'lucide-react';
+import { maxGuestsFor, clampGuestCount } from '../config/occupancy';
 import { cn } from '@/src/lib/utils';
 import { propertiesApi, bookingsApi } from '../services/api';
 import { downloadTermsPDF } from '../services/pdf';
@@ -32,6 +33,9 @@ export const Booking: React.FC = () => {
   // Stay type — explicit guest selection. 'event' is a single-day, flat-priced full-day-and-night booking.
   // Day Use and Event options can be hidden per-client via features.hasDayUse / features.hasEvent.
   const [stayType, setStayType] = useState<'day_use' | 'night_stay' | 'event'>('night_stay');
+  // Capacity caps depend on stayType — overnight beds vs day-use gathering.
+  // Re-clamped via a useEffect below when stayType changes.
+  const [guestCount, setGuestCount] = useState<number>(2);
   // Thawani temporarily hidden from the public UI; bank transfer is the only guest-visible option.
   const SHOW_THAWANI = false;
   const [paymentMethod, setPaymentMethod] = useState<'thawani' | 'bank_transfer'>('bank_transfer');
@@ -310,6 +314,12 @@ export const Booking: React.FC = () => {
     didInitialAutoSelectRef.current = true;
     applyAutoRangeSelect();
   }, [stayType, bookedDatesLoaded, selectedDates.start, selectedDates.end, applyAutoRangeSelect]);
+
+  // Clamp the guest count whenever stayType changes so a guest can't switch
+  // to overnight after picking 12 for a day-use gathering.
+  useEffect(() => {
+    setGuestCount((c) => clampGuestCount(c, stayType));
+  }, [stayType]);
 
   // Check whether every night in [startDay, endDayExclusive - 1] of the active
   // month is free. For a new night stay check_in=S → check_out=E the nights
@@ -613,6 +623,7 @@ export const Booking: React.FC = () => {
             payment_method: 'thawani',
             idImageUrl: idImageUrl || undefined,
             stay_type: stayType,
+            guestCount,
             ...(stayTimes ? {
               check_in_time: stayTimes.checkInTime,
               check_out_time: stayTimes.checkOutTime,
@@ -686,6 +697,8 @@ export const Booking: React.FC = () => {
         depositAmount,
         grandTotal,
         payment_method: paymentMethod,
+        stay_type: stayType,
+        guestCount,
         receiptURL,
         idImageUrl: idImageUrl || undefined,
         ...(stayTimes ? {
@@ -864,6 +877,41 @@ export const Booking: React.FC = () => {
       </section>
         );
       })()}
+
+      {/* Guest Count — dropdown range follows stayType (6 overnight, 16 day-use) */}
+      <section className="space-y-2">
+        <div className="flex items-center justify-between gap-2">
+          <label htmlFor="guest-count" className="text-[10px] font-bold uppercase tracking-widest text-secondary-gold">
+            {t('booking.guestsHeading', { defaultValue: 'Guests' })} *
+          </label>
+          <span className="flex items-center gap-1 text-[10px] font-medium text-primary-navy/40">
+            <Info size={11} className="text-secondary-gold/70" />
+            {t('booking.guestsLimitNote', {
+              defaultValue: 'Max 6 overnight · Max 16 day use',
+            })}
+          </span>
+        </div>
+        <div className="relative">
+          <Users
+            size={16}
+            className="absolute start-4 top-1/2 -translate-y-1/2 text-secondary-gold pointer-events-none"
+          />
+          <select
+            id="guest-count"
+            value={guestCount}
+            onChange={(e) => setGuestCount(clampGuestCount(parseInt(e.target.value, 10) || 1, stayType))}
+            className="w-full bg-pearl-white border border-primary-navy/10 rounded-xl py-3.5 ps-11 pe-4 text-sm font-medium text-primary-navy focus:ring-1 focus:ring-secondary-gold/50 outline-none appearance-none"
+          >
+            {Array.from({ length: maxGuestsFor(stayType) }, (_, i) => i + 1).map((n) => (
+              <option key={n} value={n}>
+                {n} {n === 1
+                  ? t('booking.guest', { defaultValue: 'guest' })
+                  : t('booking.guestsPlural', { defaultValue: 'guests' })}
+              </option>
+            ))}
+          </select>
+        </div>
+      </section>
 
       {/* Check-in / Check-out Cards */}
       <section className="space-y-3">
