@@ -263,6 +263,10 @@ export interface FirestoreBooking {
   stay_type?: 'day_use' | 'night_stay' | 'event';
   /** How many people will actually use the chalet. Capped per stay_type. */
   guestCount?: number;
+  /** Amount knocked off the stay subtotal by a discount rule, in OMR. */
+  discount_amount?: number;
+  /** Which discount rule produced discount_amount. Used for invoice labels. */
+  discount_kind?: 'percent' | 'flat' | 'last_night_half';
   slot_id?: string;
   slot_name?: string;
   slot_start_time?: string;
@@ -298,6 +302,8 @@ export const firestoreBookings = {
     idImageUrl?: string;
     stay_type?: 'day_use' | 'night_stay' | 'event';
     guestCount?: number;
+    discount_amount?: number;
+    discount_kind?: 'percent' | 'flat' | 'last_night_half';
     slot_id?: string;
     slot_name?: string;
     slot_start_time?: string;
@@ -369,6 +375,10 @@ export const firestoreBookings = {
       ...(typeof data.guestCount === 'number' && data.guestCount > 0
         ? { guestCount: Math.round(data.guestCount) }
         : {}),
+      ...(typeof data.discount_amount === 'number' && data.discount_amount > 0
+        ? { discount_amount: data.discount_amount }
+        : {}),
+      ...(data.discount_kind ? { discount_kind: data.discount_kind } : {}),
       ...(data.slot_id ? {
         slot_id: data.slot_id,
         slot_name: data.slot_name || '',

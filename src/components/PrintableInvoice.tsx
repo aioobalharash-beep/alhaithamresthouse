@@ -18,6 +18,10 @@ interface PrintableInvoiceProps {
   termsText?: string;
   guestCount?: number;
   stayType?: 'day_use' | 'night_stay' | 'event';
+  /** Total amount taken off the stay subtotal by an active discount rule. */
+  discountAmount?: number;
+  /** Which rule produced discountAmount — drives the label on the deduction row. */
+  discountKind?: 'percent' | 'flat' | 'last_night_half';
 }
 
 const DEFAULT_TERMS_EN = `1. Booking & Payment
@@ -92,6 +96,8 @@ export const PrintableInvoice: React.FC<PrintableInvoiceProps> = ({
   termsText,
   guestCount,
   stayType,
+  discountAmount,
+  discountKind,
 }) => {
   const isAr = lang === 'ar';
   const dir = isAr ? 'rtl' : 'ltr';
@@ -130,6 +136,8 @@ export const PrintableInvoice: React.FC<PrintableInvoiceProps> = ({
     overnight: isAr ? 'مبيت' : 'Overnight',
     dayUse: isAr ? 'استخدام نهاري' : 'Day use',
     event: isAr ? 'مناسبة' : 'Event',
+    discountLastNight: isAr ? 'خصم آخر ليلة (نصف السعر)' : 'Last Night Discount (50% off)',
+    discountGeneric: isAr ? 'خصم' : 'Discount',
     issuedBy: isAr ? 'صادرة بواسطة' : 'ISSUED BY',
     description: isAr ? 'البيان' : 'DESCRIPTION',
     amount: isAr ? 'المبلغ' : 'AMOUNT',
@@ -320,6 +328,14 @@ export const PrintableInvoice: React.FC<PrintableInvoiceProps> = ({
             <div className="pi-row">
               <span>{isAr ? `رسوم الإقامة — ${property}` : `Stay Charges — ${invoice.room_type}`}</span>
               <span className="pi-row-amount">{fmt(invoice.subtotal)}</span>
+            </div>
+          )}
+          {typeof discountAmount === 'number' && discountAmount > 0 && (
+            <div className="pi-row" style={{ color: '#92400E' }}>
+              <span>
+                {discountKind === 'last_night_half' ? t.discountLastNight : t.discountGeneric}
+              </span>
+              <span className="pi-row-amount">−{fmt(discountAmount)}</span>
             </div>
           )}
         </section>

@@ -42,7 +42,13 @@ export interface PricingSettings {
   }[];
   discount?: {
     enabled: boolean;
-    type: 'percent' | 'flat';
+    /**
+     * - 'percent' / 'flat' — classic discounts gated by start_date / end_date.
+     * - 'last_night_half' — multi-night incentive: knock 50% off the *last*
+     *   night's rate whenever the stay is ≥ 2 nights. Date range is ignored
+     *   (the bonus is always-on once enabled), and value is ignored too.
+     */
+    type: 'percent' | 'flat' | 'last_night_half';
     value: number;
     start_date: string;
     end_date: string;
@@ -57,6 +63,12 @@ export interface PriceBreakdown {
   isDayUse: boolean;
   subtotal: number;
   discount_amount: number;
+  /**
+   * Which rule produced discount_amount, if any. Used by the summary + invoice
+   * to label the deduction line specifically (e.g. "Last Night Half-Off"
+   * vs a generic "Discount").
+   */
+  discount_kind?: 'percent' | 'flat' | 'last_night_half';
   total: number;
   per_night: { date: string; dayLabel: string; rate: number; isSpecial: boolean }[];
   slotName?: string;
@@ -259,17 +271,32 @@ export function calculateTotalPrice(
     cursor.setDate(cursor.getDate() + 1);
   }
 
-  // Apply discount if active and dates overlap
+  // Apply discount. The three types are mutually exclusive — only one
+  // `discount` block exists on a property, so this is just a switch on .type.
   let discountAmount = 0;
-  if (pricing.discount?.enabled && pricing.discount.start_date && pricing.discount.end_date) {
-    const discStart = pricing.discount.start_date;
-    const discEnd = pricing.discount.end_date;
-    const overlapping = perNight.filter(n => n.date >= discStart && n.date <= discEnd);
-    if (overlapping.length > 0) {
-      if (pricing.discount.type === 'percent') {
-        discountAmount = Math.round(subtotal * (pricing.discount.value / 100) * 100) / 100;
-      } else {
-        discountAmount = pricing.discount.value;
+  let discountKind: PriceBreakdown['discount_kind'];
+  if (pricing.discount?.enabled) {
+    if (pricing.discount.type === 'last_night_half') {
+      // Multi-night incentive: 50% off the *last* night specifically. Skips
+      // single-night stays; uses the per-night rate so weekend/weekday and
+      // special-date pricing are respected.
+      if (perNight.length >= 2) {
+        const lastNightRate = perNight[perNight.length - 1].rate;
+        discountAmount = Math.round(lastNightRate * 0.5 * 100) / 100;
+        discountKind = 'last_night_half';
+      }
+    } else if (pricing.discount.start_date && pricing.discount.end_date) {
+      const discStart = pricing.discount.start_date;
+      const discEnd = pricing.discount.end_date;
+      const overlapping = perNight.filter(n => n.date >= discStart && n.date <= discEnd);
+      if (overlapping.length > 0) {
+        if (pricing.discount.type === 'percent') {
+          discountAmount = Math.round(subtotal * (pricing.discount.value / 100) * 100) / 100;
+          discountKind = 'percent';
+        } else {
+          discountAmount = pricing.discount.value;
+          discountKind = 'flat';
+        }
       }
     }
   }
@@ -279,6 +306,7 @@ export function calculateTotalPrice(
     isDayUse: false,
     subtotal,
     discount_amount: discountAmount,
+    discount_kind: discountKind,
     total: Math.max(0, subtotal - discountAmount),
     per_night: perNight,
   };

@@ -38,6 +38,8 @@ interface RealtimeBooking {
   check_out_time?: string;
   guestCount?: number;
   stay_type?: 'day_use' | 'night_stay' | 'event';
+  discount_amount?: number;
+  discount_kind?: 'percent' | 'flat' | 'last_night_half';
   created_at: string;
 }
 
@@ -486,6 +488,8 @@ export const Invoices: React.FC = () => {
           termsText={i18n.language === 'ar' ? termsAr : termsEn}
           guestCount={selectedBooking?.guestCount}
           stayType={selectedBooking?.stay_type}
+          discountAmount={Number(selectedBooking?.discount_amount) || undefined}
+          discountKind={selectedBooking?.discount_kind}
         />
       )}
 
@@ -598,6 +602,18 @@ export const Invoices: React.FC = () => {
                         <td className="text-end font-headline font-bold">OMR {item.amount.toFixed(2)}</td>
                       </tr>
                     ))}
+                    {selectedBooking && Number(selectedBooking.discount_amount) > 0 && (
+                      <tr className="text-amber-700">
+                        <td className="py-2 font-medium text-sm">
+                          {selectedBooking.discount_kind === 'last_night_half'
+                            ? 'Last Night Discount (50% off)'
+                            : 'Discount applied'}
+                        </td>
+                        <td className="text-end font-headline font-bold text-sm">
+                          − OMR {Number(selectedBooking.discount_amount).toFixed(2)}
+                        </td>
+                      </tr>
+                    )}
                     <tr className="border-t border-primary-navy/5">
                       <td className="py-4 font-bold text-base">Grand Total</td>
                       <td className="py-4 text-end font-headline text-xl text-secondary-gold font-bold">OMR {selectedInvoice.total_amount.toFixed(2)}</td>
