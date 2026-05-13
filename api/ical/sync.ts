@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import crypto from 'node:crypto';
-import { getAdminAuth, getDb } from '../_lib/firebaseAdmin';
-import { parseIcs, type ParsedEvent } from '../_lib/ical';
+import { getAdminAuth, getDb } from '../_lib/firebaseAdmin.js';
+import { parseIcs, type ParsedEvent } from '../_lib/ical.js';
 
 // Incoming sync — pulls every URL listed in
 // settings/property_details.icalImportUrls and writes the union of their
@@ -33,6 +33,21 @@ interface BlockRecord {
 const FETCH_TIMEOUT_MS = 15_000;
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  try {
+    return await runSync(req, res);
+  } catch (err) {
+    // Anything that escapes the inner logic — bad service account, dropped
+    // Firestore connection, etc. — lands here as a real JSON message so the
+    // GitHub Actions log shows the cause instead of a bare 500.
+    const message = err instanceof Error ? err.message : String(err);
+    console.error('[ical/sync] unhandled error:', err);
+    if (!res.headersSent) {
+      res.status(500).json({ error: message });
+    }
+  }
+}
+
+async function runSync(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });
     return;
