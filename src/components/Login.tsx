@@ -6,12 +6,12 @@ import { useAuth } from '../contexts/AuthContext';
 import { sendPasswordResetEmail } from '../services/firebase';
 import { useTranslation } from 'react-i18next';
 import { LanguageToggle } from './LanguageToggle';
-import { getClientConfig, isAdminEmail } from '../config/clientConfig';
+import { getClientConfig } from '../config/clientConfig';
 import { BrandMark } from './BrandMark';
 
 export const Login: React.FC = () => {
   const navigate = useNavigate();
-  const { login, logout } = useAuth();
+  const { login } = useAuth();
   const config = getClientConfig();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -44,14 +44,7 @@ export const Login: React.FC = () => {
     setLoading(true);
 
     try {
-      const signedIn = await login(email, password);
-      // Admin role must match an email on the allowlist; anything else is signed out.
-      if (signedIn.role === 'admin' && !isAdminEmail(signedIn.email)) {
-        await logout();
-        setError('This account is not authorized as an administrator.');
-        setLoading(false);
-        return;
-      }
+      await login(email, password);
     } catch (err: any) {
       setError(err.message || 'Something went wrong');
     } finally {
