@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getDb } from '../_lib/firebaseAdmin';
-import { buildIcs, type ExportEvent } from '../_lib/ical';
+import { getDb } from '../_lib/firebaseAdmin.js';
+import { buildIcs, type ExportEvent } from '../_lib/ical.js';
 
 // Outgoing iCal feed — Booking.com / Massarah / etc. subscribe to this URL.
 //

@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import crypto from 'node:crypto';
-import { getAdminAuth, getDb } from '../_lib/firebaseAdmin';
-import { parseIcs, type ParsedEvent } from '../_lib/ical';
+import { getAdminAuth, getDb } from '../_lib/firebaseAdmin.js';
+import { parseIcs, type ParsedEvent } from '../_lib/ical.js';
 
 // Incoming sync — pulls every URL listed in
 // settings/property_details.icalImportUrls and writes the union of their
