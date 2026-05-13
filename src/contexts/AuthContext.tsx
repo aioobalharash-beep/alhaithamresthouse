@@ -30,6 +30,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (fbUser) => {
       if (fbUser) {
+        // Fallback derived from Firebase Auth so the session survives even
+        // when Firestore rules block the /users/{uid} read.
+        const fallback: User = {
+          id: fbUser.uid,
+          name: fbUser.displayName || (fbUser.email ? fbUser.email.split('@')[0] : 'User'),
+          email: fbUser.email || '',
+          role: isAdminEmail(fbUser.email) ? 'admin' : 'client',
+          phone: fbUser.phoneNumber || '',
+        };
         try {
           const profile = (await authApi.me(fbUser.uid)) as User | null;
           if (profile) {
@@ -39,10 +48,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               : profile.role;
             setUser({ ...profile, role });
           } else {
-            setUser(null);
+            setUser(fallback);
           }
         } catch {
-          setUser(null);
+          setUser(fallback);
         }
       } else {
         setUser(null);
