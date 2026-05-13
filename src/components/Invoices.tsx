@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { FileText, Receipt, Download, MessageCircle, X, Calendar, Building2, Edit3, Paperclip, IdCard, AlertCircle, Home, Printer } from 'lucide-react';
+import { FileText, Receipt, MessageCircle, X, Edit3, Paperclip, IdCard, AlertCircle, Home, Printer } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 import { collection, query, orderBy, onSnapshot, doc, getDoc, setDoc, limit } from 'firebase/firestore';
 import { db } from '../services/firebase';
-import { generateVATReportPDF } from '../services/vatReport';
 import type { Invoice } from '../types';
 import { useTranslation } from 'react-i18next';
 import { getClientConfig } from '../config/clientConfig';
@@ -162,55 +161,6 @@ export const Invoices: React.FC = () => {
     return 'pending';
   };
 
-  // Last 6 months for VAT reports
-  const getLastSixMonths = () => {
-    const months: { label: string; month: number; year: number }[] = [];
-    const now = new Date();
-    const locale = i18n.language === 'ar' ? 'ar-OM' : 'en-US';
-    for (let i = 0; i < 6; i++) {
-      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      months.push({
-        label: d.toLocaleDateString(locale, { month: 'long', year: 'numeric' }),
-        month: d.getMonth(),
-        year: d.getFullYear(),
-      });
-    }
-    return months;
-  };
-
-  const getMonthlyConfirmedBookings = (month: number, year: number) => {
-    return bookings.filter(b => {
-      if (b.status === 'cancelled') return false;
-      if (b.status !== 'confirmed' && b.status !== 'checked-in') return false;
-      const d = new Date(b.check_in);
-      return d.getMonth() === month && d.getFullYear() === year;
-    });
-  };
-
-  const handleDownloadVAT = (month: number, year: number, label: string) => {
-    const monthBookings = getMonthlyConfirmedBookings(month, year);
-    const totalRevenue = monthBookings.reduce((sum, b) => sum + (Number(b.stayTotal) || (Number(b.total_amount) - (Number(b.depositAmount) || Number(b.security_deposit) || 0))), 0);
-    const vatCollected = +(totalRevenue * 0.05).toFixed(2);
-
-    generateVATReportPDF({
-      month: label,
-      taxId: '1009283746',
-      licenseNumber,
-      chaletName: config.chaletName,
-      adminName: config.admin.name,
-      totalRevenue,
-      vatRate: 5,
-      vatCollected,
-      bookingCount: monthBookings.length,
-      bookings: monthBookings.map(b => ({
-        guest_name: b.guest_name,
-        check_in: b.check_in,
-        nights: b.nights,
-        amount: Number(b.stayTotal) || (Number(b.total_amount) - (Number(b.depositAmount) || Number(b.security_deposit) || 0)),
-      })),
-    });
-  };
-
   const handleViewPDF = (b: RealtimeBooking) => {
     setSelectedInvoice(bookingToInvoice(b));
     setSelectedBooking(b);
@@ -243,7 +193,6 @@ export const Invoices: React.FC = () => {
   };
 
   const nonCancelledBookings = bookings.filter(b => b.status !== 'cancelled');
-  const lastSixMonths = getLastSixMonths();
 
   if (loading) return <div className="p-8 animate-pulse"><div className="h-96 bg-primary-navy/5 rounded-xl" /></div>;
 
@@ -460,66 +409,6 @@ export const Invoices: React.FC = () => {
         )}
       </section>
 
-      {/* SECTION 2: Monthly VAT Reports */}
-      <section className="space-y-4">
-        <div className="px-1">
-          <h3 className="font-headline text-lg text-primary-navy font-bold">{t('invoices.businessTaxReports')}</h3>
-          <p className="text-primary-navy/50 text-xs font-medium">{t('invoices.businessTaxReportsDesc')}</p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {lastSixMonths.map((m, i) => {
-            const monthBookings = getMonthlyConfirmedBookings(m.month, m.year);
-            const totalRevenue = monthBookings.reduce((sum, b) => sum + (Number(b.stayTotal) || (Number(b.total_amount) - (Number(b.depositAmount) || Number(b.security_deposit) || 0))), 0);
-            const vatCollected = +(totalRevenue * 0.05).toFixed(2);
-
-            return (
-              <motion.div
-                key={m.label}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05 }}
-                className="bg-white rounded-[20px] p-5 border border-primary-navy/5 shadow-sm space-y-4 hover:border-primary-navy/10 transition-colors"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Calendar size={16} className="text-secondary-gold" />
-                    <h4 className="text-sm font-bold text-primary-navy">{m.label}</h4>
-                  </div>
-                  <span className="text-[10px] font-bold text-primary-navy/40">{monthBookings.length} bookings</span>
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex justify-between text-xs">
-                    <span className="text-primary-navy/50">{t('invoices.revenue')}</span>
-                    <span className="font-bold text-primary-navy">{totalRevenue.toLocaleString('en-US', { minimumFractionDigits: 2 })} {t('common.omr')}</span>
-                  </div>
-                  <div className="flex justify-between text-xs">
-                    <span className="text-primary-navy/50">{t('invoices.vat')}</span>
-                    <span className="font-bold text-secondary-gold">{vatCollected.toFixed(2)} {t('common.omr')}</span>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => handleDownloadVAT(m.month, m.year, m.label)}
-                  disabled={monthBookings.length === 0}
-                  className="w-full flex items-center justify-center gap-2 bg-primary-navy text-white py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest active:scale-[0.98] transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-                >
-                  <Download size={12} />
-                  {t('invoices.downloadVatReport')}
-                </button>
-              </motion.div>
-            );
-          })}
-        </div>
-
-        <div className="bg-surface-container-low rounded-xl p-4 flex items-center gap-3">
-          <Building2 size={16} className="text-secondary-gold flex-shrink-0" />
-          <p className="text-[10px] text-primary-navy/50 font-bold">
-            {t('invoices.taxId')}: <span className="text-primary-navy">1009283746</span> &bull; {t('invoices.vatRate')}: <span className="text-primary-navy">5%</span> &bull; {t('common.alMalak')}
-          </p>
-        </div>
-      </section>
 
       {/* Receipt / ID Viewer Modal */}
       <AnimatePresence>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, MapPin, Phone, Mail } from 'lucide-react';
+import { ArrowLeft, MapPin, Phone } from 'lucide-react';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../services/firebase';
 
@@ -82,10 +82,6 @@ export const About: React.FC = () => {
           <div className="flex items-center gap-3">
             <Phone size={16} className="text-secondary-gold flex-shrink-0" />
             <span dir="ltr">+968 9941 6579</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <Mail size={16} className="text-secondary-gold flex-shrink-0" />
-            <span dir="ltr">akwakhhwwdyman@gmail.com</span>
           </div>
         </div>
       </div>
