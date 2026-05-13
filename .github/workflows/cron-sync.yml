@@ -45,15 +45,24 @@ jobs:
             exit 1
           fi
 
-          # --fail-with-body so a non-2xx response exits non-zero AND prints
-          # the response payload — that way the Actions log shows whatever
-          # error the endpoint reported instead of a bare HTTP code.
-          response=$(curl --silent --show-error --fail-with-body \
+          # Always print the response body, then exit non-zero on non-2xx so
+          # a real error message lands in the Actions log instead of a bare
+          # curl exit code.
+          status=$(curl --silent --show-error \
+            --output /tmp/sync-body \
+            --write-out '%{http_code}' \
             --request POST \
             --header "Authorization: Bearer ${SYNC_TOKEN}" \
             --header "Content-Type: application/json" \
             --max-time 60 \
             "${SYNC_URL}")
 
-          echo "Sync response:"
-          echo "${response}"
+          echo "HTTP ${status}"
+          echo "Body:"
+          cat /tmp/sync-body || true
+          echo
+
+          if [ "${status}" -lt 200 ] || [ "${status}" -ge 300 ]; then
+            echo "::error::Sync endpoint returned HTTP ${status}"
+            exit 1
+          fi
