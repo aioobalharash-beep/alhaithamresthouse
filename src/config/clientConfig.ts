@@ -63,7 +63,7 @@ export const CLIENT_CONFIG: ClientConfig = {
     background: '#F1F5F9',
   },
   admin: {
-    email: 'akwakhhwwdyman@gmail.com',
+    email: 'aioob.alharash@gmail.com',
     additionalEmails: [],
     name: 'Al Haitham Rest House Admin',
   },
@@ -80,7 +80,7 @@ export const CLIENT_CONFIG: ClientConfig = {
     hasEvent: false,
   },
   checkInOut: {
-    checkInTime: '14:00',   // 2:00 PM
+    checkInTime: '13:00',   // 1:00 PM
     checkOutTime: '11:00',  // 11:00 AM (next day for night stays)
   },
 };

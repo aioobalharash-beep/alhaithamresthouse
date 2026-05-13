@@ -77,7 +77,7 @@ export const About: React.FC = () => {
         <div className="space-y-3 text-sm text-primary-navy/70">
           <div className="flex items-center gap-3">
             <MapPin size={16} className="text-secondary-gold flex-shrink-0" />
-            <span>{isAr ? 'استراحة الهيثم، سلطنة عمان' : 'Al Haitham Rest House, Oman'}</span>
+            <span>{isAr ? 'استراحة الهيثم، ولاية الحمراء' : 'Al Haitham Rest House, Oman'}</span>
           </div>
           <div className="flex items-center gap-3">
             <Phone size={16} className="text-secondary-gold flex-shrink-0" />
