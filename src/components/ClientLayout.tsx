@@ -32,14 +32,14 @@ export const ClientLayout: React.FC = () => {
   return (
     <div className="min-h-screen bg-pearl-white flex flex-col">
       {/* Client Top Bar */}
-      <header className="fixed top-0 w-full z-50 bg-pearl-white/90 backdrop-blur-xl shadow-[0px_10px_30px_rgba(1,31,54,0.04)] px-6 h-16 flex items-center justify-between">
+      <header className="fixed top-0 w-full z-50 bg-pearl-white/90 backdrop-blur-xl shadow-[0px_10px_30px_rgba(1,31,54,0.04)] px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
         <Link
           to="/"
-          className="font-headline text-xl font-bold text-primary-navy tracking-widest uppercase"
+          className="font-headline text-sm sm:text-xl font-bold text-primary-navy tracking-widest uppercase truncate min-w-0"
         >
           {t('common.alMalak')}
         </Link>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
           <LanguageToggle />
           {isAdmin && (
             <button
