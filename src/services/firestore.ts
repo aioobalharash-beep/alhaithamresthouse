@@ -105,39 +105,49 @@ const mapAuthError = (err: any): Error => {
 
 export const firestoreUsers = {
   async login(email: string, password: string): Promise<{ user: AppUser }> {
+    let credential;
     try {
-      const credential = await signInWithEmailAndPassword(auth, email.trim(), password);
-      const fbUser = credential.user;
-
-      const profileRef = doc(db, 'users', fbUser.uid);
-      const profileSnap = await getDoc(profileRef);
-
-      let profile: Omit<AppUser, 'id'>;
-      if (profileSnap.exists()) {
-        const data = profileSnap.data();
-        profile = {
-          name: data.name || fbUser.displayName || email.split('@')[0],
-          email: data.email || fbUser.email || email,
-          role: (data.role as UserRole) || (isAdminEmail(fbUser.email) ? 'admin' : 'client'),
-          phone: data.phone || fbUser.phoneNumber || '',
-        };
-      } else {
-        profile = {
-          name: fbUser.displayName || email.split('@')[0],
-          email: fbUser.email || email,
-          role: isAdminEmail(fbUser.email) ? 'admin' : 'client',
-          phone: fbUser.phoneNumber || '',
-        };
-        await setDoc(profileRef, {
-          ...profile,
-          created_at: new Date().toISOString(),
-        });
-      }
-
-      return { user: { id: fbUser.uid, ...profile } };
+      credential = await signInWithEmailAndPassword(auth, email.trim(), password);
     } catch (err) {
       throw mapAuthError(err);
     }
+    const fbUser = credential.user;
+
+    // Fallback profile derived from Firebase Auth + the email allowlist.
+    // Used when Firestore rules block the /users/{uid} read or write so the
+    // user can still get into the app — the allowlist is the source of truth
+    // for admin status anyway.
+    const fallback: Omit<AppUser, 'id'> = {
+      name: fbUser.displayName || email.split('@')[0],
+      email: fbUser.email || email,
+      role: isAdminEmail(fbUser.email) ? 'admin' : 'client',
+      phone: fbUser.phoneNumber || '',
+    };
+
+    let profile: Omit<AppUser, 'id'> = fallback;
+    try {
+      const profileRef = doc(db, 'users', fbUser.uid);
+      const profileSnap = await getDoc(profileRef);
+      if (profileSnap.exists()) {
+        const data = profileSnap.data();
+        profile = {
+          name: data.name || fallback.name,
+          email: data.email || fallback.email,
+          role: (data.role as UserRole) || fallback.role,
+          phone: data.phone || fallback.phone,
+        };
+      } else {
+        try {
+          await setDoc(profileRef, { ...fallback, created_at: new Date().toISOString() });
+        } catch (writeErr) {
+          console.warn('Could not seed user profile in Firestore:', writeErr);
+        }
+      }
+    } catch (readErr) {
+      console.warn('Could not read user profile from Firestore:', readErr);
+    }
+
+    return { user: { id: fbUser.uid, ...profile } };
   },
 
   async register(data: {
@@ -172,16 +182,23 @@ export const firestoreUsers = {
   },
 
   async getById(id: string): Promise<AppUser | null> {
-    const snap = await getDoc(doc(db, 'users', id));
-    if (!snap.exists()) return null;
-    const data = snap.data();
-    return {
-      id: snap.id,
-      name: data.name,
-      email: data.email,
-      role: (data.role as UserRole) || 'client',
-      phone: data.phone,
-    };
+    try {
+      const snap = await getDoc(doc(db, 'users', id));
+      if (!snap.exists()) return null;
+      const data = snap.data();
+      return {
+        id: snap.id,
+        name: data.name,
+        email: data.email,
+        role: (data.role as UserRole) || 'client',
+        phone: data.phone,
+      };
+    } catch (err) {
+      // Rules may deny the read mid-session; let the caller fall back to
+      // Firebase Auth state instead of forcing a logout.
+      console.warn('Could not read user profile from Firestore:', err);
+      return null;
+    }
   },
 };
 
