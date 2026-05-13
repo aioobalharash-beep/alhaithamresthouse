@@ -12,6 +12,7 @@ import { migratePricing, formatTime, type PricingSettings, type DayUseSlot } fro
 import { type BilingualField, toBilingual } from '../utils/bilingual';
 import { useLanguage } from '../contexts/LanguageContext';
 import { getClientConfig } from '../config/clientConfig';
+import { SyncSettings } from './SyncSettings';
 
 interface GalleryImage { url: string; label: string; }
 
@@ -1150,6 +1151,9 @@ const PropertyEditorComponent: React.FC = () => {
           <Plus size={14} /> {t('propertyEditor.addNewSection')}
         </button>
       </section>
+
+      {/* Calendar Sync (iCal) */}
+      <SyncSettings />
 
       {/* Save */}
       <div className="flex justify-end gap-3 pt-2">

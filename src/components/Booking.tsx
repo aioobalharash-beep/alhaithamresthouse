@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronLeft, ChevronRight, ShieldCheck, AlertCircle, ArrowLeft, Upload, CreditCard, Building2, Check, FileText, X, Download } from 'lucide-react';
@@ -61,6 +61,9 @@ export const Booking: React.FC = () => {
   // are blocked — the check_out day itself becomes a normal available day
   // (morning cleanup wraps well before the 2 PM arrival window).
   const [bookedDates, setBookedDates] = useState<Set<string>>(new Set());
+  // Dates blocked by externally-synced calendars (Booking.com etc). Treated
+  // identically to internal bookings for availability purposes.
+  const [externalBlockedDates, setExternalBlockedDates] = useState<Set<string>>(new Set());
   // Becomes true after the first bookings snapshot resolves so auto-select
   // waits for the authoritative list before defaulting the calendar range.
   const [bookedDatesLoaded, setBookedDatesLoaded] = useState(false);
@@ -150,6 +153,34 @@ export const Booking: React.FC = () => {
     return () => unsubscribe();
   }, []);
 
+  // Real-time listener for externally-synced blocks (Booking.com / Massarah
+  // calendars pulled by the iCal sync endpoint). Each block has an inclusive
+  // start and an exclusive end (matches iCal DTEND semantics + our existing
+  // overnight loop), so we expand them the same way bookings are expanded.
+  useEffect(() => {
+    const ref = doc(db, 'settings', 'external_blocks');
+    const unsubscribe = onSnapshot(ref, (snap) => {
+      if (!snap.exists()) {
+        setExternalBlockedDates(new Set());
+        return;
+      }
+      const data = snap.data() as { blocks?: { start: string; end: string }[] };
+      const blocked = new Set<string>();
+      for (const b of data.blocks || []) {
+        if (!b.start) continue;
+        const start = parseLocalDate(b.start);
+        const end = b.end ? parseLocalDate(b.end) : new Date(start.getTime() + 86_400_000);
+        const cursor = new Date(start);
+        while (cursor < end) {
+          blocked.add(formatLocalDate(cursor));
+          cursor.setDate(cursor.getDate() + 1);
+        }
+      }
+      setExternalBlockedDates(blocked);
+    });
+    return () => unsubscribe();
+  }, []);
+
   // Real-time listener for property availability status
   useEffect(() => {
     const ref = doc(db, 'settings', 'property_status');
@@ -216,9 +247,17 @@ export const Booking: React.FC = () => {
     });
   };
 
+  // Internal bookings + externally-synced blocks all count as unavailable.
+  const unavailableDates = useMemo(() => {
+    if (externalBlockedDates.size === 0) return bookedDates;
+    const merged = new Set(bookedDates);
+    externalBlockedDates.forEach((d) => merged.add(d));
+    return merged;
+  }, [bookedDates, externalBlockedDates]);
+
   const isDayBooked = (day: number): boolean => {
     const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-    if (bookedDates.has(dateStr)) return true;
+    if (unavailableDates.has(dateStr)) return true;
     // If slots exist, check whether any slot is still available (overlap-aware)
     if (dayUseSlots.length > 0) {
       if (getAvailableSlotsForDate(dateStr).length === 0) return true;
@@ -243,12 +282,12 @@ export const Booking: React.FC = () => {
 
       if (start.getMonth() !== end.getMonth()) continue;
 
-      if (!bookedDates.has(formatLocalDate(start))) {
+      if (!unavailableDates.has(formatLocalDate(start))) {
         return { start, end };
       }
     }
     return null;
-  }, [bookedDates]);
+  }, [unavailableDates]);
 
   const applyAutoRangeSelect = useCallback((): boolean => {
     const pair = findNextAvailableRangePair();
@@ -279,7 +318,7 @@ export const Booking: React.FC = () => {
   const nightsRangeIsClear = (startDay: number, endDayExclusive: number): boolean => {
     for (let d = startDay; d < endDayExclusive; d++) {
       const key = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-      if (bookedDates.has(key)) return false;
+      if (unavailableDates.has(key)) return false;
     }
     return true;
   };

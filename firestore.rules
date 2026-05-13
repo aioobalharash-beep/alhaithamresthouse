@@ -50,6 +50,8 @@ service cloud.firestore {
 
     match /settings/{id} {
       allow read;
+      // The iCal sync endpoint runs with the firebase-admin SDK (server-only)
+      // so it bypasses these rules; admin UI writes still require role=admin.
       allow write: if isAdmin();
     }
 
