@@ -261,6 +261,8 @@ export interface FirestoreBooking {
   receiptURL?: string;
   idImageUrl?: string;
   stay_type?: 'day_use' | 'night_stay' | 'event';
+  /** How many people will actually use the chalet. Capped per stay_type. */
+  guestCount?: number;
   slot_id?: string;
   slot_name?: string;
   slot_start_time?: string;
@@ -295,6 +297,7 @@ export const firestoreBookings = {
     receiptURL?: string;
     idImageUrl?: string;
     stay_type?: 'day_use' | 'night_stay' | 'event';
+    guestCount?: number;
     slot_id?: string;
     slot_name?: string;
     slot_start_time?: string;
@@ -363,6 +366,9 @@ export const firestoreBookings = {
       receiptURL: data.receiptURL || '',
       idImageUrl: data.idImageUrl || '',
       ...(data.stay_type ? { stay_type: data.stay_type } : {}),
+      ...(typeof data.guestCount === 'number' && data.guestCount > 0
+        ? { guestCount: Math.round(data.guestCount) }
+        : {}),
       ...(data.slot_id ? {
         slot_id: data.slot_id,
         slot_name: data.slot_name || '',

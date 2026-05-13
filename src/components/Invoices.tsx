@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { FileText, Receipt, MessageCircle, X, Edit3, Paperclip, IdCard, AlertCircle, Home, Printer } from 'lucide-react';
+import { FileText, Receipt, MessageCircle, X, Edit3, Paperclip, IdCard, AlertCircle, Home, Printer, Users, Moon, Sun } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 import { collection, query, orderBy, onSnapshot, doc, getDoc, setDoc, limit } from 'firebase/firestore';
 import { db } from '../services/firebase';
@@ -36,6 +36,8 @@ interface RealtimeBooking {
   slot_name_ar?: string;
   check_in_time?: string;
   check_out_time?: string;
+  guestCount?: number;
+  stay_type?: 'day_use' | 'night_stay' | 'event';
   created_at: string;
 }
 
@@ -482,6 +484,8 @@ export const Invoices: React.FC = () => {
           checkInTime={selectedBooking?.check_in_time}
           checkOutTime={selectedBooking?.check_out_time}
           termsText={i18n.language === 'ar' ? termsAr : termsEn}
+          guestCount={selectedBooking?.guestCount}
+          stayType={selectedBooking?.stay_type}
         />
       )}
 
@@ -557,6 +561,28 @@ export const Invoices: React.FC = () => {
                     <p className="font-bold text-primary-navy">{new Date(selectedInvoice.issued_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
                   </div>
                 </div>
+
+                {/* Stay type + guest count — what the property manager needs at check-in */}
+                {(selectedBooking?.stay_type || typeof selectedBooking?.guestCount === 'number') && (
+                  <div className="flex flex-wrap gap-3 -mt-2">
+                    {selectedBooking?.stay_type && (
+                      <span className="inline-flex items-center gap-1.5 bg-primary-navy/5 text-primary-navy/70 px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-widest">
+                        {selectedBooking.stay_type === 'night_stay' ? <Moon size={12} /> : <Sun size={12} />}
+                        {selectedBooking.stay_type === 'night_stay'
+                          ? 'Overnight'
+                          : selectedBooking.stay_type === 'day_use'
+                            ? 'Day use'
+                            : 'Event'}
+                      </span>
+                    )}
+                    {typeof selectedBooking?.guestCount === 'number' && selectedBooking.guestCount > 0 && (
+                      <span className="inline-flex items-center gap-1.5 bg-secondary-gold/10 text-secondary-gold px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-widest">
+                        <Users size={12} />
+                        {selectedBooking.guestCount} {selectedBooking.guestCount === 1 ? 'guest' : 'guests'}
+                      </span>
+                    )}
+                  </div>
+                )}
 
                 <table className="w-full">
                   <thead>

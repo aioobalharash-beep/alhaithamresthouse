@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Search, Calendar as CalendarIcon, Phone, UserPlus, X, Clock, AlertCircle, Pin, Check, Ban, Paperclip, Home } from 'lucide-react';
+import { Search, Calendar as CalendarIcon, Phone, UserPlus, X, Clock, AlertCircle, Pin, Check, Ban, Paperclip, Home, Users } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 import { useSearchParams } from 'react-router-dom';
 import { propertiesApi } from '../services/api';
@@ -38,6 +38,8 @@ interface BookingGuest {
   created_at: string;
   isPinned: boolean;
   displayStatus: DisplayStatus;
+  guestCount?: number;
+  stay_type?: 'day_use' | 'night_stay' | 'event';
 }
 
 function computeDisplayStatus(booking: { status: string; check_in: string; check_out: string }): DisplayStatus {
@@ -123,6 +125,8 @@ export const Guests: React.FC = () => {
             isManual: data.isManual === true,
             created_at: data.created_at || '',
             isPinned: data.isPinned === true,
+            guestCount: typeof data.guestCount === 'number' ? data.guestCount : undefined,
+            stay_type: data.stay_type,
             displayStatus: computeDisplayStatus({
               status: data.status,
               check_in: data.check_in,
@@ -353,6 +357,15 @@ export const Guests: React.FC = () => {
                         >
                           <Home size={9} />
                           Manual
+                        </span>
+                      )}
+                      {typeof guest.guestCount === 'number' && guest.guestCount > 0 && (
+                        <span
+                          title={`${guest.guestCount} guest${guest.guestCount === 1 ? '' : 's'}`}
+                          className="inline-flex items-center gap-1 bg-primary-navy/5 text-primary-navy/70 px-2 py-0.5 rounded-full text-[10px] font-bold"
+                        >
+                          <Users size={10} />
+                          {guest.guestCount}
                         </span>
                       )}
                     </div>

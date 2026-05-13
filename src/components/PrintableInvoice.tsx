@@ -16,6 +16,8 @@ interface PrintableInvoiceProps {
   checkInTime?: string;
   checkOutTime?: string;
   termsText?: string;
+  guestCount?: number;
+  stayType?: 'day_use' | 'night_stay' | 'event';
 }
 
 const DEFAULT_TERMS_EN = `1. Booking & Payment
@@ -88,6 +90,8 @@ export const PrintableInvoice: React.FC<PrintableInvoiceProps> = ({
   checkInTime: checkInTimeProp,
   checkOutTime: checkOutTimeProp,
   termsText,
+  guestCount,
+  stayType,
 }) => {
   const isAr = lang === 'ar';
   const dir = isAr ? 'rtl' : 'ltr';
@@ -121,6 +125,11 @@ export const PrintableInvoice: React.FC<PrintableInvoiceProps> = ({
     stayWindow: isAr ? 'فترة الإقامة' : 'STAY WINDOW',
     checkIn: isAr ? 'تسجيل الوصول' : 'Check-in',
     checkOut: isAr ? 'تسجيل المغادرة' : 'Check-out',
+    guests: isAr ? 'عدد الضيوف' : 'Guests',
+    stayTypeLabel: isAr ? 'نوع الإقامة' : 'Stay type',
+    overnight: isAr ? 'مبيت' : 'Overnight',
+    dayUse: isAr ? 'استخدام نهاري' : 'Day use',
+    event: isAr ? 'مناسبة' : 'Event',
     issuedBy: isAr ? 'صادرة بواسطة' : 'ISSUED BY',
     description: isAr ? 'البيان' : 'DESCRIPTION',
     amount: isAr ? 'المبلغ' : 'AMOUNT',
@@ -264,6 +273,28 @@ export const PrintableInvoice: React.FC<PrintableInvoiceProps> = ({
                 </span>
               </span>
             </div>
+            {(stayType || (typeof guestCount === 'number' && guestCount > 0)) && (
+              <div className="pi-stay-row" style={{ marginTop: 8 }}>
+                {stayType && (
+                  <span className="pi-stay-chip">
+                    <span className="pi-stay-chip-label">{t.stayTypeLabel}</span>
+                    <span className="pi-stay-chip-value">
+                      <span className="pi-stay-time">
+                        {stayType === 'night_stay' ? t.overnight : stayType === 'day_use' ? t.dayUse : t.event}
+                      </span>
+                    </span>
+                  </span>
+                )}
+                {typeof guestCount === 'number' && guestCount > 0 && (
+                  <span className="pi-stay-chip">
+                    <span className="pi-stay-chip-label">{t.guests}</span>
+                    <span className="pi-stay-chip-value">
+                      <span className="pi-stay-time">{guestCount}</span>
+                    </span>
+                  </span>
+                )}
+              </div>
+            )}
           </section>
         )}
 
