@@ -52,6 +52,8 @@ export const Dashboard: React.FC = () => {
 
   // Real-time bookings from Firestore (same source as Calendar page)
   const [bookings, setBookings] = useState<RealtimeBooking[]>([]);
+  // Externally-synced blocks from the iCal sync (Booking.com / Massarah / …)
+  const [externalBlocks, setExternalBlocks] = useState<{ source: string; start: string; end: string }[]>([]);
 
   // Chalet availability toggle (Firestore settings/property_status)
   const [chaletLive, setChaletLive] = useState(true);
@@ -116,6 +118,20 @@ export const Dashboard: React.FC = () => {
     const q = query(collection(db, 'bookings'), orderBy('created_at', 'desc'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       setBookings(snapshot.docs.map(d => ({ id: d.id, ...d.data() } as RealtimeBooking)));
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Externally-synced blocks (Booking.com / Massarah / …) — mirrored from
+  // the Booking page so the admin sees the same availability picture.
+  useEffect(() => {
+    const unsubscribe = onSnapshot(doc(db, 'settings', 'external_blocks'), (snap) => {
+      if (!snap.exists()) {
+        setExternalBlocks([]);
+        return;
+      }
+      const data = snap.data() as { blocks?: { source: string; start: string; end: string }[] };
+      setExternalBlocks(data.blocks || []);
     });
     return () => unsubscribe();
   }, []);
@@ -233,6 +249,34 @@ export const Dashboard: React.FC = () => {
         }
       }
     }
+
+    // Overlay externally-synced blocks. iCal DTEND is exclusive — expand
+    // [start, end) and stamp each day as confirmed so the admin calendar
+    // matches the public booking page.
+    const monthStartDate = new Date(calYear, calMonth, 1);
+    const monthEndDate = new Date(calYear, calMonth + 1, 0);
+    for (const blk of externalBlocks) {
+      if (!blk.start) continue;
+      const start = new Date(blk.start);
+      const end = blk.end ? new Date(blk.end) : new Date(start.getTime() + 86_400_000);
+      if (end <= monthStartDate || start > monthEndDate) continue;
+
+      const cursor = new Date(start);
+      while (cursor < end) {
+        if (cursor.getMonth() === calMonth && cursor.getFullYear() === calYear) {
+          const d = cursor.getDate();
+          const existing = dayMap.get(d);
+          if (existing) {
+            existing.status = 'confirmed';
+            existing.isDayUse = false;
+          } else {
+            dayMap.set(d, { status: 'confirmed', isDayUse: false, bookings: [] });
+          }
+        }
+        cursor.setDate(cursor.getDate() + 1);
+      }
+    }
+
     return dayMap;
   };
 
