@@ -185,7 +185,11 @@ const PropertyEditorComponent: React.FC = () => {
   const handleSave = async () => {
     setSaving(true);
     try {
-      await setDoc(doc(db, 'settings', 'property_details'), form);
+      // merge: true is critical — other surfaces (SyncSettings, AboutPage,
+      // etc.) write fields like icalExportToken / icalImportUrls into the
+      // same property_details doc. A naked setDoc(form) would wipe anything
+      // not in the property form's TypeScript shape on every save.
+      await setDoc(doc(db, 'settings', 'property_details'), form, { merge: true });
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch (err) {

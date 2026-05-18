@@ -27,7 +27,7 @@ interface ImportUrlEntry {
 interface ExternalBlocksDoc {
   blocks?: { source: string; uid: string; summary: string; start: string; end: string }[];
   lastSyncedAt?: string;
-  lastSyncStatus?: 'ok' | 'partial' | 'failed';
+  lastSyncStatus?: 'ok' | 'partial' | 'failed' | 'no_sources';
   errors?: { url: string; message: string }[];
 }
 
@@ -188,6 +188,9 @@ export const SyncSettings: React.FC = () => {
     );
   }
 
+  const blocksByDate = (externalBlocks?.blocks || [])
+    .slice()
+    .sort((a, b) => a.start.localeCompare(b.start));
   const lastSyncLabel = externalBlocks?.lastSyncedAt
     ? new Date(externalBlocks.lastSyncedAt).toLocaleString()
     : 'Never';
@@ -377,6 +380,34 @@ export const SyncSettings: React.FC = () => {
               </p>
             ))}
           </div>
+        )}
+
+        {/* Blocks preview — lets the admin verify which dates external feeds
+            actually claimed. Caps at 8 rows; remainder is summarised. */}
+        {blocksByDate.length > 0 && (
+          <details className="rounded-xl border border-primary-navy/5 bg-pearl-white text-xs">
+            <summary className="cursor-pointer px-3 py-2 font-bold text-primary-navy/70 select-none">
+              View {blocksByDate.length} imported block{blocksByDate.length === 1 ? '' : 's'}
+            </summary>
+            <ul className="divide-y divide-primary-navy/5">
+              {blocksByDate.slice(0, 8).map((b, i) => (
+                <li key={`${b.source}-${b.uid}-${i}`} className="px-3 py-2 flex items-center justify-between gap-3">
+                  <span className="font-mono text-[11px] text-primary-navy/70">
+                    {b.start}
+                    {b.end && b.end !== b.start ? ` → ${b.end}` : ''}
+                  </span>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-primary-navy/40 truncate">
+                    {b.source}
+                  </span>
+                </li>
+              ))}
+              {blocksByDate.length > 8 && (
+                <li className="px-3 py-2 text-[11px] text-primary-navy/40 italic">
+                  …and {blocksByDate.length - 8} more
+                </li>
+              )}
+            </ul>
+          </details>
         )}
       </div>
     </section>

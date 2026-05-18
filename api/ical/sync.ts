@@ -73,16 +73,19 @@ async function runSync(req: VercelRequest, res: VercelResponse) {
     : [];
 
   if (importUrls.length === 0) {
+    // Don't wipe already-cached blocks just because the URL list is
+    // momentarily empty — that turns an unrelated bug (e.g. an admin save
+    // that drops the URLs) into lost availability data. Caller can clear
+    // explicitly by removing the external_blocks doc.
     await db.collection('settings').doc('external_blocks').set(
       {
-        blocks: [],
         lastSyncedAt: new Date().toISOString(),
-        lastSyncStatus: 'ok',
+        lastSyncStatus: 'no_sources',
         errors: [],
       },
       { merge: true },
     );
-    res.status(200).json({ ok: true, totalEvents: 0, sources: [] });
+    res.status(200).json({ ok: true, totalEvents: 0, sources: [], note: 'no import URLs configured' });
     return;
   }
 
